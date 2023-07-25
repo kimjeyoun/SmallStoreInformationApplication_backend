@@ -7,10 +7,10 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "category")
-public class category {
+public class Category {
     @Id
-    private Long category_number;
+    private Long categoryNumber;
 
     @Column(nullable = false)
-    private String category_name;
+    private String categoryName;
 }

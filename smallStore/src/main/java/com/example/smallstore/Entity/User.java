@@ -11,30 +11,30 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Table(name = "user")
-public class user {
+public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long user_num;
+    private Long num;
 
     @Id
     @Column(unique = true, nullable = false)
-    private String user_id;
+    private String id;
 
     @Column(unique = true, nullable = false)
-    private String user_email;
+    private String email;
 
     @Column(nullable = false)
-    private String user_password;
+    private String password;
 
     @Column(unique = true, nullable = false)
-    private String user_address;
+    private String address;
 
     @Column(nullable = false)
-    private String user_nickname;
+    private String nickname;
 
     // 이메일 2차 인증
     @Column(nullable = false)
     @Type(type = "true_false")
-    private boolean email_confirmed;
+    private boolean emailConfirmed;
 
     // 유저 권한
 //    @Enumerated(EnumType.STRING)

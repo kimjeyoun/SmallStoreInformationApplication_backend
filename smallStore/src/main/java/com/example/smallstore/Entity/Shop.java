@@ -7,32 +7,32 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "shop")
-public class shop {
+public class Shop {
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long shop_num;
+    private Long shopNum;
 
     @Column(nullable = false)
-    private String shop_name;
+    private String shopName;
 
     @Id
     @Column(nullable = false)
-    private String shop_number;
+    private String shopNumber;
 
     @Column(nullable = false)
-    private String shop_owner;
+    private String shopOwner;
 
     @Column(unique = true, nullable = false)
-    private String shop_address;
+    private String shopAddress;
 
     @Column()
-    private String shop_phoneNumber;
+    private String shopPhoneNumber;
 
     @Column()
-    private String shop_logo;
+    private String shopLogo;
 
     @Column()
-    private String shop_picture;
+    private String shopPicture;
 
     @Column()
-    private String category_name;
+    private String categoryName;
 }
