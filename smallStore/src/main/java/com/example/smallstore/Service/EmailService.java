@@ -36,12 +36,13 @@ public class EmailService {
             }
         }
         randomCode = key.toString();
+        System.out.println(randomCode);
     }
 
     // 메일 양식 작성
     public MimeMessage createEmailForm(String email) throws MessagingException {
         createCode(); //인증 코드 생성
-        String setFrom = "어디있숍"; //(보내는 사람)
+        String setFrom = "ovo010703@gmail.com"; //(보내는 사람)
         String title = "어디있숍 2차 인증 코드"; //제목
 
         // 메일 내용 메일의 subtype을 html로 지정하여 html문법 사용 가능
@@ -60,6 +61,9 @@ public class EmailService {
         message.setFrom(setFrom); //보내는 이메일
         message.setText(msg, "utf-8", "html");
 
+        System.out.println(message);
+        System.out.println(randomCode);
+
         return message;
     }
 
@@ -67,7 +71,6 @@ public class EmailService {
     public void sendEmail(String toEmail) throws MessagingException {
         //메일전송에 필요한 정보 설정
         MimeMessage emailForm = createEmailForm(toEmail);
-        System.out.println("check email" + emailForm);
         //실제 메일 전송
         emailSender.send(emailForm);
     }

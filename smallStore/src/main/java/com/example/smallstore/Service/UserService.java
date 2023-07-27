@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import static com.example.smallstore.Error.ErrorCode.NOT_ALLOW_WRITE_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -116,7 +118,7 @@ public class UserService {
     // 2차 인증 이메일 인증
     public ResponseEntity verifyEmail(EmailVerifyRequest emailVerifyRequest){
         emailService.verifyEmail(emailVerifyRequest.getEmail(), emailVerifyRequest.getRandomCode());
-        User user = userRepository.findById(emailVerifyRequest.getEmail()).orElseThrow();
+        User user = userRepository.findByEmail(emailVerifyRequest.getEmail()).orElseThrow();
         user.setEmailConfirmed(true);
         userRepository.save(user);
         emailAuthRepository.deleteByEmail(user.getEmail());
