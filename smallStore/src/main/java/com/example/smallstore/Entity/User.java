@@ -1,5 +1,6 @@
 package com.example.smallstore.Entity;
 
+import com.example.smallstore.enums.UserRole;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -37,7 +38,8 @@ public class User {
     private boolean emailConfirmed;
 
     // 유저 권한
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private UserRole userRole;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole userRole;
+
 }
