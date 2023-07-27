@@ -1,34 +1,64 @@
 package com.example.smallstore.Controller;
 
+import com.example.smallstore.Dto.User.Email.EmailRequest;
+import com.example.smallstore.Dto.User.Email.EmailVerifyRequest;
+import com.example.smallstore.Dto.User.UserDeleteRequest;
 import com.example.smallstore.Dto.User.UserLoginRequest;
-import com.example.smallstore.Entity.User;
-import com.example.smallstore.Repository.UserRepository;
+import com.example.smallstore.Dto.User.UserSignupRequest;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
+
+    // 회원가입
+    @ApiOperation(value = "유저 회원가입")
+    @PostMapping("/signup")
+    public ResponseEntity userSignUp(@RequestBody UserSignupRequest userSignupRequest, HttpServletResponse response, HttpServletRequest request) {
+        return userService.signup(userSignupRequest, response, request);
+    }
 
     // 로그인
     @ApiOperation(value = "유저 로그인")
     @PostMapping("/login")
-    public ResponseEntity<String> userLogin(@RequestBody UserLoginRequest userLoginRequest) {
-        if(!userService.login(userLoginRequest)){
-            return ResponseEntity.badRequest().body("로그인이 실패하였습니다. 다시 시도하세요.");
-        }
-        User user = userRepository.findById(userLoginRequest.getId()).orElseThrow();
-        userService.login(userLoginRequest);
+    public ResponseEntity userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request) {
+        return userService.login(userLoginRequest, response, request);
+    }
 
-        return ResponseEntity.ok(user.getNickname()+"님 환영합니다.");
+    // 로그아웃
+    @ApiOperation(value = "유저 로그아웃")
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request) {
+        userService.logout(request);
+    }
+
+    // 탈퇴
+    @ApiOperation(value = "유저 탈퇴")
+    @DeleteMapping()
+    public ResponseEntity delete(@RequestBody UserDeleteRequest userDeleteRequest, HttpServletRequest request) {
+        return userService.deleteUser(userDeleteRequest, request);
+    }
+
+    @ApiOperation(value = "2차 인증 이메일")
+    @PostMapping("/email")
+    public ResponseEntity check(@RequestBody EmailRequest emailRequest) throws MessagingException {
+        return userService.sendEmail(emailRequest.getEmail());
+    }
+
+    // 2차 인증 이메일
+    @ApiOperation(value = "이메일 인증")
+    @PostMapping("/emailVerify")
+    public ResponseEntity verify(@RequestBody EmailVerifyRequest emailVerifyRequest){
+        return userService.verifyEmail(emailVerifyRequest);
     }
 }
