@@ -1,6 +1,7 @@
 package com.example.smallstore.Entity;
 
 import com.example.smallstore.enums.UserRole;
+import com.example.smallstore.Dto.User.UserUpdateRequest;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -41,5 +42,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole userRole;
+
+    public void update(UserUpdateRequest userUpdateRequest) {
+        this.email = userUpdateRequest.getEmail();
+        this.address = userUpdateRequest.getAddress();
+        this.nickname = userUpdateRequest.getNickname();
+    }
 
 }

@@ -21,7 +21,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println(path);
 
-        if (path.contains("/swagger-ui/index.html") || path.contains("/users/login") || path.contains("/users/signup") || path.contains("/users/email") || path.contains("/users/emailVerify")) {
+        if (path.contains("/swagger-ui/**") || path.contains("/users/login") || path.contains("/users/signup") || path.contains("/users/email") || path.contains("/users/emailVerify")) {
             System.out.println("check");
             filterChain.doFilter(request, response);
             return;

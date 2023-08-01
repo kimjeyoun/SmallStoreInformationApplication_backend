@@ -23,8 +23,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 // 접근 허용된 사용자만 접근 가능
-//                .antMatchers(HttpMethod.GET,"/users/mypage").hasAnyRole("USER", "SHOPOWNER")
-//                .antMatchers(HttpMethod.GET,"/users/list").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT,"/users/mypage").hasAnyRole("USER", "SHOPOWNER")
+                .antMatchers(HttpMethod.GET,"/users/logout").hasAnyRole("USER", "SHOPOWNER")
+                .antMatchers(HttpMethod.DELETE,"/users").hasAnyRole("USER", "SHOPOWNER")
+                .antMatchers(HttpMethod.POST,"/users/email", "/users/emailVerify").hasAnyRole("USER", "SHOPOWNER")
                 // 나머지 요청에 대해서는 권한 제한 없이 호출 가능하도록 설정
                 .anyRequest().permitAll()
                 .and()

@@ -1,9 +1,7 @@
 package com.example.smallstore.Service;
 
+import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.Email.EmailVerifyRequest;
-import com.example.smallstore.Dto.User.UserDeleteRequest;
-import com.example.smallstore.Dto.User.UserLoginRequest;
-import com.example.smallstore.Dto.User.UserSignupRequest;
 import com.example.smallstore.Entity.User;
 import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.JWT.JwtTokenProvider;
@@ -86,6 +84,14 @@ public class UserService {
 
         // 로그인 성공 시
         return ResponseEntity.ok(user.getNickname()+"님 환영합니다.");
+    }
+
+    // 마이페이지 수정
+    public ResponseEntity updateUser(UserUpdateRequest userUpdateRequest) {
+        User user = userRepository.findById(userUpdateRequest.getId()).orElseThrow();
+        user.update(userUpdateRequest);
+        userRepository.save(user);
+        return ResponseEntity.ok("내 정보 업데이트 완료.");
     }
 
     // 로그아웃

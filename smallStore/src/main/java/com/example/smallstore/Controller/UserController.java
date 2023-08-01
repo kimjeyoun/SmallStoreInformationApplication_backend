@@ -1,10 +1,8 @@
 package com.example.smallstore.Controller;
 
+import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.Email.EmailRequest;
 import com.example.smallstore.Dto.User.Email.EmailVerifyRequest;
-import com.example.smallstore.Dto.User.UserDeleteRequest;
-import com.example.smallstore.Dto.User.UserLoginRequest;
-import com.example.smallstore.Dto.User.UserSignupRequest;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +31,13 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request) {
         return userService.login(userLoginRequest, response, request);
+    }
+
+    // 마이페이지 수정
+    @ApiOperation(value = "유저 정보 수정")
+    @PutMapping("/mypage")
+    public ResponseEntity updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+        return userService.updateUser(userUpdateRequest);
     }
 
     // 로그아웃
