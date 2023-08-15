@@ -14,14 +14,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "user")
 public class User {
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long num;
-
     @Id
     @Column(unique = true, nullable = false)
     private String id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)

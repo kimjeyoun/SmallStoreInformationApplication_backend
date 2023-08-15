@@ -1,11 +1,17 @@
 package com.example.smallstore.Entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 
 @Data
+@Builder
 @Entity
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Table(name = "shop")
 public class Shop {
     @GeneratedValue(strategy = GenerationType.AUTO)

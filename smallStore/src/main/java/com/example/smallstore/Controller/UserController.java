@@ -60,6 +60,7 @@ public class UserController {
         return userService.sendEmail(emailRequest.getEmail());
     }
 
+
     // 2차 인증 이메일
     @ApiOperation(value = "이메일 인증")
     @PostMapping("/emailVerify")
