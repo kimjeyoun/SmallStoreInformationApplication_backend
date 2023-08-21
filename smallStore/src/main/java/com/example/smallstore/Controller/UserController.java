@@ -1,8 +1,7 @@
 package com.example.smallstore.Controller;
 
 import com.example.smallstore.Dto.User.*;
-import com.example.smallstore.Dto.User.Email.EmailRequest;
-import com.example.smallstore.Dto.User.Email.EmailVerifyRequest;
+import com.example.smallstore.Dto.User.Email.*;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -54,17 +53,31 @@ public class UserController {
         return userService.deleteUser(userDeleteRequest, request);
     }
 
-    @ApiOperation(value = "2차 인증 이메일")
+    // 2차 인증 이메일 보내기
+    @ApiOperation(value = "2차 인증 이메일 보내기")
     @PostMapping("/email")
     public ResponseEntity check(@RequestBody EmailRequest emailRequest) throws MessagingException {
         return userService.sendEmail(emailRequest.getEmail());
     }
 
-
-    // 2차 인증 이메일
+    // 이메일 인증 코드 확인
     @ApiOperation(value = "이메일 인증")
-    @PostMapping("/emailVerify")
-    public ResponseEntity verify(@RequestBody EmailVerifyRequest emailVerifyRequest){
+    @PostMapping("/email/emailVerify")
+    public ResponseEntity verify(@RequestBody EmailVerifyRequest emailVerifyRequest) throws MessagingException {
         return userService.verifyEmail(emailVerifyRequest);
+    }
+
+    // 비밀번호 찾기 이메일 보내기
+    @ApiOperation(value = "비밀번호 찾기 이메일 보내기")
+    @PostMapping("/email/findPW")
+    public ResponseEntity findPW(@RequestBody FindPWRequest findPWRequest) throws MessagingException {
+        return userService.findPW(findPWRequest);
+    }
+
+    // 비밀번호 변경
+    @ApiOperation(value = "비밀번호 변경")
+    @PutMapping("/email/updatePW")
+    public ResponseEntity updatePW(@RequestBody UpdatePWRequest updatePWRequest){
+        return userService.updatePW(updatePWRequest);
     }
 }

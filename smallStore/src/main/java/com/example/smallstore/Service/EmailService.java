@@ -40,54 +40,65 @@ public class EmailService {
     }
 
     // 메일 양식 작성
-    public MimeMessage createEmailForm(String email) throws MessagingException {
+    public MimeMessage createEmailForm(String email, String type) throws MessagingException {
         createCode(); //인증 코드 생성
         String setFrom = "ovo010703@gmail.com"; //(보내는 사람)
-        String title = "어디있숍 2차 인증 코드"; //제목
+        String title = ""; //제목
 
-        // 메일 내용 메일의 subtype을 html로 지정하여 html문법 사용 가능
         String msg="";
-        msg += "<div style=\"margin:100px;\">";
-        msg += "<h1 style = \"text-align: center;\"> 어디있숍 2차 인증 메일</h1> <br>";
-        msg += "<p> 아래 코드를 인증 창으로 돌아가 입력해주세요.</p>\n<p> 인증 번호 : ";
-        msg += randomCode;
-        msg += "</p>\n<div>\n<br/><br/><br/>";
-        msg += "<p style = \"text-align : right;\">shop</p>";
-        msg += "</div>\n<br />\n</div>";
-
+        // 메일 내용 메일의 subtype을 html로 지정하여 html문법 사용 가능
+        if(type.equals("auth")){
+            title = "어디있숍 2차 인증 코드";
+            msg += "<div style=\"margin:100px;\">";
+            msg += "<h1 style = \"text-align: center;\"> 어디있숍 2차 인증 메일</h1> <br>";
+            msg += "<p> 아래 코드를 인증 창으로 돌아가 입력해주세요.</p>\n<p> 인증 번호 : ";
+            msg += randomCode;
+            msg += "</p>\n<div>\n<br/><br/><br/>";
+            msg += "<p style = \"text-align : right;\">어디있숍</p>";
+            msg += "</div>\n<br />\n</div>";
+        } else if(type.equals("findPW")){
+            title = "어디있숍 비밀번호 찾기 인증 코드";
+            msg += "<div style=\"margin:100px;\">";
+            msg += "<h1 style = \"text-align: center;\"> 어디있숍 비밀번호 찾기 인증 코드</h1> <br>";
+            msg += "<p> 아래 코드를 인증 창으로 돌아가 입력해주세요.</p>\n<p> 인증 번호 : ";
+            msg += randomCode;
+            msg += "</p>\n<div>\n<br/><br/><br/>";
+            msg += "<p style = \"text-align : right;\">어디있숍</p>";
+            msg += "</div>\n<br />\n</div>";
+        }
         MimeMessage message = emailSender.createMimeMessage();
         message.addRecipients(MimeMessage.RecipientType.TO, email); //보낼 이메일 설정
         message.setSubject(title); //제목 설정
         message.setFrom(setFrom); //보내는 이메일
         message.setText(msg, "utf-8", "html");
 
-        System.out.println(message);
         System.out.println(randomCode);
 
         return message;
     }
 
     // 메일 보내기
-    public void sendEmail(String toEmail) throws MessagingException {
+    public void sendEmail(String toEmail, String type) throws MessagingException {
         //메일전송에 필요한 정보 설정
-        MimeMessage emailForm = createEmailForm(toEmail);
+        MimeMessage emailForm = createEmailForm(toEmail, type);
         //실제 메일 전송
         emailSender.send(emailForm);
     }
 
     // 데베에 저장
-    public void saveDB(String email) throws MessagingException {
+    public void saveDB(String email, String type) throws MessagingException {
         if(emailAuthRepository.existsByEmail(email)){
             throw new ErrorException("이미 인증 메일을 보냈습니다.", NOT_ALLOW_WRITE_EXCEPTION);
         }
-        this.sendEmail(email);
+        this.sendEmail(email, type);
         EmailSaveRequest emailSaveRequest = new EmailSaveRequest();
         emailSaveRequest.setEmail(email);
         emailSaveRequest.setRandomCode(randomCode);
+        emailSaveRequest.setType(type);
         emailAuthRepository.save(emailSaveRequest.toEntity());
     }
 
-    public void verifyEmail(String email, String user_randCode){
+    public void verifyEmail(String email, String user_randCode) throws MessagingException {
         EmailAuth emailAuth = emailAuthRepository.findByEmail(email).orElseThrow();
 
         // 현재 시각 가져오기
@@ -95,11 +106,12 @@ public class EmailService {
 
         if(currentDateTime.isAfter(emailAuth.getCreatedDate().plusMinutes(10))){
             emailAuthRepository.deleteByEmail(email);
-            throw new ErrorException("인증 가능 시간이 지났습니다. 다시 한번 시도하세요.", NOT_ALLOW_WRITE_EXCEPTION);
+            this.saveDB(email, emailAuth.getType());
+            throw new ErrorException("인증 가능 시간이 지났습니다. 다시 시도하세요.", NOT_ALLOW_WRITE_EXCEPTION);
         }
 
         if(!user_randCode.equals(emailAuth.getRandomCode())){
-            throw new ErrorException("2차 인증 암호가 틀렸습니다. 다시 한번 시도하세요..", NOT_ALLOW_WRITE_EXCEPTION);
+            throw new ErrorException("랜덤 코드가 틀렸습니다. 다시 한번 시도하세요..", NOT_ALLOW_WRITE_EXCEPTION);
         }
     }
 

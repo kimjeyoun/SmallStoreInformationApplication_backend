@@ -7,12 +7,13 @@ import lombok.RequiredArgsConstructor;
 @Data // get, set 둘 다 됨.
 @RequiredArgsConstructor
 public class EmailSaveRequest {
-    private String email, randomCode;
+    private String email, randomCode, type;
 
     public EmailAuth toEntity() {
         return EmailAuth.builder()
                 .email(email)
                 .randomCode(randomCode)
+                .type(type)
                 .build();
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ShopRepository extends JpaRepository<Shop, String> {
+public interface ShopRepository extends JpaRepository<Shop, Long> {
 //
 //    @Modifying
 //    @Query("DELETE FROM Shop s WHERE s.shopName = :shopName")

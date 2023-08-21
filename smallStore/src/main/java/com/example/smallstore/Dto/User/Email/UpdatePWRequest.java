@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data // get, set 둘 다 됨.
 @RequiredArgsConstructor
-public class EmailVerifyRequest {
-    private String email, randomCode;
+public class UpdatePWRequest {
+    private String email, password;
     private VerifyRole verifyRole;
 }

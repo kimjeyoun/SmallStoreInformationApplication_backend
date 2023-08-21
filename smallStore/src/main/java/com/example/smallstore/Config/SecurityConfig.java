@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -27,6 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/users/logout").hasAnyRole("USER", "SHOPOWNER")
                 .antMatchers(HttpMethod.DELETE,"/users").hasAnyRole("USER", "SHOPOWNER")
                 .antMatchers(HttpMethod.POST,"/users/email", "/users/emailVerify").hasAnyRole("USER", "SHOPOWNER")
+                .antMatchers(HttpMethod.PUT,"/users/email/findPW").hasAnyRole("VERIFYTRUE")
+                .antMatchers(HttpMethod.POST,"/shop").hasAnyRole("SHOPOWNER")
                 // 나머지 요청에 대해서는 권한 제한 없이 호출 가능하도록 설정
                 .anyRequest().permitAll()
                 .and()
