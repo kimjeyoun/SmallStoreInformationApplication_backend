@@ -32,6 +32,16 @@ public class UserController {
         return userService.login(userLoginRequest, response, request);
     }
 
+    // ayZtHRXq_Ujlol1P1j6CHQBQ-yMhR_sOfpQQLJ-csQ8QSd-QTOO2leyBQy71JtENZ81Lewo9dBEAAAGKHZMSTg
+    // 카카오 로그인
+    @ApiOperation(value = "유저 카카오 로그인")
+    @ResponseBody
+    @GetMapping("/kakaoLogin")
+    public ResponseEntity userKakaoLogin(@RequestParam String code) {
+        System.out.println("code : " + code);
+        return userService.kakaoLogin(code);
+    }
+
     // 마이페이지 수정
     @ApiOperation(value = "유저 정보 수정")
     @PutMapping("/mypage")
