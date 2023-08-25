@@ -1,5 +1,6 @@
 package com.example.smallstore.Entity;
 
+import com.example.smallstore.Dto.Shop.ShopRegisterRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +30,9 @@ public class Shop {
     private String shopNumber;
 
     @ApiModelProperty(value = "가게 주인", example = "user_nickname")
-    @Column(nullable = false)
-    private String shopOwner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ApiModelProperty(value = "가게 주소", example = "경기도 군포시")
     @Column(unique = true, nullable = false)
@@ -48,6 +50,18 @@ public class Shop {
     @Column()
     private String shopPicture;
 
-    @Column()
-    private String categoryName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_num")
+    private Category category;
+
+    public Shop(ShopRegisterRequest shopRegisterRequest, User user, Category category) {
+        this.shopName = shopRegisterRequest.getShopName();
+        this.shopNumber = shopRegisterRequest.getShopNumber();
+        this.user = user;
+        this.shopAddress = shopRegisterRequest.getShopAddress();
+        this.shopPhoneNumber = shopRegisterRequest.getShopPhoneNumber();
+        this.shopLogo = shopRegisterRequest.getShopLogo();
+        this.shopPicture = shopRegisterRequest.getShopPicture();
+        this.category = category;
+    }
 }

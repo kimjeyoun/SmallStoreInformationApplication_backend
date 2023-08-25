@@ -1,4 +1,4 @@
-package com.example.smallstore.Dto.Shop;
+package com.example.smallstore.Service;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

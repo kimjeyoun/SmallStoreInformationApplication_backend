@@ -14,15 +14,14 @@ import com.example.smallstore.enums.UserRole;
 import com.example.smallstore.enums.VerifyRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,6 @@ import static com.example.smallstore.Error.ErrorCode.NOT_ALLOW_WRITE_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

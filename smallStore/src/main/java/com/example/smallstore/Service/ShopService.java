@@ -2,9 +2,12 @@ package com.example.smallstore.Service;
 
 import com.example.smallstore.Dto.Shop.ShopNumberCheckRequest;
 import com.example.smallstore.Dto.Shop.ShopRegisterRequest;
-import com.example.smallstore.Dto.Shop.UtilService;
-import com.example.smallstore.Error.ErrorException;
+import com.example.smallstore.Entity.Category;
+import com.example.smallstore.Entity.Shop;
+import com.example.smallstore.Entity.User;
+import com.example.smallstore.Repository.CategoryRepository;
 import com.example.smallstore.Repository.ShopRepository;
+import com.example.smallstore.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import okhttp3.MediaType;
@@ -14,12 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.json.simple.JSONObject;
 
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-
-import static com.example.smallstore.Error.ErrorCode.ACCESS_DENIED_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +26,8 @@ public class ShopService {
     private final ShopRepository shopRepository;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     // 사업자 등록 번호 확인
     public ResponseEntity numberCheck(ShopNumberCheckRequest shopNumberCheckRequest) {
@@ -51,7 +51,8 @@ public class ShopService {
             JSONArray data = (JSONArray) UtilService.stringToJson(response.body().string()).get("data");
             JSONObject data2 = (JSONObject) data.get(0);
             result = (String) data2.get("b_stt_cd");
-            if(result == "1") {
+            System.out.println(result);
+            if(result.equals("01")) {
                 return ResponseEntity.ok("사업자입니다!");
             }
             return ResponseEntity.badRequest().body("사용할 수 없는 사업자등록번호입니다.");
@@ -63,8 +64,10 @@ public class ShopService {
 
     // 가게 등록
     public ResponseEntity regeist(ShopRegisterRequest shopRegisterRequest) {
-        shopRepository.save(shopRegisterRequest.toEntity());
-
+        User user = userRepository.findById(shopRegisterRequest.getId()).orElseThrow();
+        Category category = categoryRepository.findByNum(shopRegisterRequest.getCategoryNum()).orElseThrow();
+        Shop shop = new Shop(shopRegisterRequest, user, category);
+        shopRepository.save(shop);
         return ResponseEntity.ok("가게 등록이 완료되었습니다.");
     }
 }
