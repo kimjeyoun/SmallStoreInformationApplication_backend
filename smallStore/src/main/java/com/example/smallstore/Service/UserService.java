@@ -42,7 +42,6 @@ public class UserService {
     private final EmailService emailService;
     private final EmailAuthRepository emailAuthRepository;
     private final RefreshTokenService refreshTokenService;
-    private final KakaoApi kakaoApi;
 
     // 토큰 헤더에 저장
     public void setJwtTokenInHeader(String id, HttpServletResponse response, HttpServletRequest request) {
@@ -66,8 +65,12 @@ public class UserService {
         }
         // 비밀번호 저장
         userSignupRequest.setPassword(passwordEncoder.encode(userSignupRequest.getPassword()));
-        // 2차 인증 이메일 해야함.
-        userSignupRequest.setEmailConfirmed(false);
+        if(userSignupRequest.getLoginType().equals("kakaoLogin")){
+            userSignupRequest.setEmailConfirmed(true);
+        } else {
+            // 2차 인증 이메일 해야함.
+            userSignupRequest.setEmailConfirmed(false);
+        }
         userSignupRequest.setVerifyRole(VerifyRole.valueOf("VERIFYFALSE"));
         userRepository.save(userSignupRequest.toEntity());
         this.setJwtTokenInHeader(userSignupRequest.getId(), response, request);
@@ -92,16 +95,6 @@ public class UserService {
 
         // 로그인 성공 시
         return ResponseEntity.ok(user.getNickname()+"님 환영합니다.");
-    }
-
-    // 카카오 로그인
-    public ResponseEntity kakaoLogin(String code){
-        String accessToken = kakaoApi.getAceessToken(code);
-        if(accessToken.equals("실패")){
-            return ResponseEntity.badRequest().body("카카오 로그인 실패했습니다.");
-        }
-        String email = kakaoApi.getUserInfo(accessToken);
-        return ResponseEntity.ok("카카오 로그인 성공했습니다.");
     }
 
     // 마이페이지 수정

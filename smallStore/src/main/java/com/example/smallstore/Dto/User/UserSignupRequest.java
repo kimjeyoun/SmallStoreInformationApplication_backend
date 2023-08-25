@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @Data // get, set 둘 다 됨.
 @RequiredArgsConstructor
 public class UserSignupRequest {
-    private String id,email, password, address, nickname;
+    private String id,email, password, address, nickname, loginType;
     private UserRole userRole;
     private boolean emailConfirmed;
     private VerifyRole verifyRole;

@@ -31,7 +31,7 @@ public class User {
     private String password;
 
     @ApiModelProperty(value = "address", example = "경기도 군포시")
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String address;
 
     @ApiModelProperty(value = "nickname", example = "test")
