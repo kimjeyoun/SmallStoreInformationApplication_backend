@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -50,6 +51,11 @@ public class UserService {
 
         jwtTokenProvider.setHeaderAccessToken(response, accessToken);
         jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
+
+        // 쿠키 생성 및 토큰 설정
+        Cookie cookie = new Cookie("jwtToken", accessToken);
+        cookie.setPath("/"); // 쿠키 경로 설정 (루트 경로로 설정하여 모든 페이지에서 접근 가능)
+        response.addCookie(cookie);
 
         String ip = this.getClientIp(request);
         refreshTokenService.saveRefreshToken(id, ip, refreshToken);
@@ -90,7 +96,6 @@ public class UserService {
             return ResponseEntity.badRequest().body("2차 인증이 되지 않았습니다. 다시 시도하세요.");
         }
         this.setJwtTokenInHeader(userLoginRequest.getId(), response, request);
-
         // 로그인 성공 시
         return ResponseEntity.ok(user.getNickname()+"님 환영합니다.");
     }
@@ -176,7 +181,8 @@ public class UserService {
 
     // 토큰에서 정보 가져오기
     public User findUserByToken(HttpServletRequest request) {
-        String id = jwtTokenProvider.getUserId(jwtTokenProvider.resolveAccessToken(request));
+        System.out.println("token: "+jwtTokenProvider.findCookie(request));
+        String id = jwtTokenProvider.getUserId(jwtTokenProvider.findCookie(request));
         User user = userRepository.findById(id).orElseThrow();
         return user;
     }

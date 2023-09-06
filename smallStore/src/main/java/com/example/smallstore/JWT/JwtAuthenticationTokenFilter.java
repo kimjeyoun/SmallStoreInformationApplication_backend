@@ -21,13 +21,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println(path);
 
-        if (path.contains("/swagger-ui") || path.contains("/users/login") || path.contains("/users/signup") || path.contains("/users/email") || path.contains("/users/emailVerify") || path.contains("/favicon.ico") || path.contains("/swagger-resources") || path.contains("/v2/api-docs") || path.contains("/swagger-ui/index.html") || path.contains("/users/kakaoLogin") || path.startsWith("/chat") || path.startsWith("/webjars") || path.startsWith("/ws")) {
+        if (path.contains("/swagger-ui") || path.contains("/users/login") || path.contains("/users/signup") || path.contains("/users/email") || path.contains("/users/emailVerify") || path.contains("/favicon.ico") || path.contains("/swagger-resources") || path.contains("/v2/api-docs") || path.contains("/swagger-ui/index.html") || path.contains("/users/kakaoLogin") || path.contains("/chat/login") || path.startsWith("/webjars") || path.startsWith("/ws")) {
             System.out.println("check");
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = jwtTokenProvider.resolveAccessToken(request);
+        //String token = jwtTokenProvider.resolveAccessToken(request);
+        String token = jwtTokenProvider.findCookie(request);
         System.out.println(token);
 
         if(token == null){

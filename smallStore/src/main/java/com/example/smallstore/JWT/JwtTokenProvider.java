@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Key;
@@ -42,6 +43,20 @@ public class JwtTokenProvider {
     @Value("${jwt.refreshTokenExpiration}")
     private long refreshTokenValidTime;
 
+    public String findCookie(HttpServletRequest request) {
+        // 쿠키에서 JWT 토큰 검색
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwtToken".equals(cookie.getName())) {
+                    String jwtToken = cookie.getValue();
+                    // 토큰 사용
+                    return jwtToken;
+                }
+            }
+        }
+        return "Token not found";
+    }
 
     // 객체 초기화, secretKey를 Base64로 인코딩한다.
     @PostConstruct // 의존성 주입 후, 초기화를 수행
@@ -112,8 +127,14 @@ public class JwtTokenProvider {
 
     // Request의 Header에서 AccessToken 값을 가져옵니다. "authorization" : "token"
     public String resolveAccessToken(HttpServletRequest request) {
+        System.out.println("jwt : " + this.findCookie(request));
         if(request.getHeader("Authorization") != null )
             return request.getHeader("Authorization").substring(7);
+        if(this.findCookie(request)!=null){
+            System.out.println("성공");
+            return this.findCookie(request);
+        }
+
         return null;
     }
 

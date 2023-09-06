@@ -17,6 +17,7 @@ public class ChatRoom {
     public static ChatRoom create(String name) {
         ChatRoom room = new ChatRoom();
         room.roomId = UUID.randomUUID().toString();
+        System.out.println("roomId = " + room.roomId);
         room.roomName = name;
         return room;
     }

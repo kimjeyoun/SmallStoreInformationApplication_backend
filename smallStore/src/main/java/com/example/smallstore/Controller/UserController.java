@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -15,10 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
+@Controller
 @RequiredArgsConstructor
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
+    private final ChatController chatController;
 
     // 회원가입
     @ApiResponses( value ={
@@ -38,8 +42,8 @@ public class UserController {
     })
     @ApiOperation(value = "유저 로그인")
     @PostMapping("/login")
-    public ResponseEntity userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request) {
-        return userService.login(userLoginRequest, response, request);
+    public void userLogin(UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request, Model model) {
+        userService.login(userLoginRequest, response, request);
     }
 
     // 마이페이지 수정

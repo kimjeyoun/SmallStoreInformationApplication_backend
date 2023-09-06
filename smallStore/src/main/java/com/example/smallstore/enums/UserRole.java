@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum UserRole {
     USER("ROLE_USER"),
-    SHOPOWNE("ROLE_SHOPOWNER"),
+    SHOPOWNER("ROLE_SHOPOWNER"),
     ADMIN("ROLE_ADMIN");
 
     private final String value;

@@ -47,7 +47,7 @@ public class User {
     // 유저 권한
     @ApiModelProperty(value = "유저 권한", example = "USER/SHOPOWNER")
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "user_role")
     private UserRole userRole;
 
     // 비밀번호 인증 확인
