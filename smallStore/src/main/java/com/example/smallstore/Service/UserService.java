@@ -181,7 +181,6 @@ public class UserService {
 
     // 토큰에서 정보 가져오기
     public User findUserByToken(HttpServletRequest request) {
-        System.out.println("token: "+jwtTokenProvider.findCookie(request));
         String id = jwtTokenProvider.getUserId(jwtTokenProvider.findCookie(request));
         User user = userRepository.findById(id).orElseThrow();
         return user;

@@ -17,7 +17,7 @@
 <body>
 <div class="container" id="app" v-cloak>
     <div>
-        <h2>{{room.name}}</h2>
+        <h2>{{room.chatTo}}와의 채팅방</h2>
     </div>
     <div class="input-group">
         <div class="input-group-prepend">
@@ -50,23 +50,23 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            roomId: '',
-            room: {},
+            chatId: '',
+            room: [],
             sender: '',
             message: '',
             messages: []
         },
         created() {
-            this.roomId = localStorage.getItem('wschat.roomId');
+            this.chatId = localStorage.getItem('wschat.chatId');
             this.sender = localStorage.getItem('wschat.sender');
             this.findRoom();
         },
         methods: {
             findRoom: function() {
-                axios.get('/chat/room/'+this.roomId).then(response => { this.room = response.data; });
+                axios.get('/chat/room/'+this.chatId).then(response => { this.room = response.data; console.log(this.room)});
             },
             sendMessage: function() {
-                ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.roomId, sender:this.sender, message:this.message}));
+                ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', roomId:this.chatId, sender:this.sender, message:this.message}));
                 this.message = '';
             },
             recvMessage: function(recv) {
@@ -78,11 +78,11 @@
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("/topic/chat/room/"+vm.$data.roomId, function(message) {
+            ws.subscribe("/topic/chat/room/"+vm.$data.chatId, function(message) {
                 var recv = JSON.parse(message.body);
                 vm.recvMessage(recv);
             });
-            ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.roomId, sender:vm.$data.sender}));
+            ws.send("/app/chat/message", {}, JSON.stringify({type:'ENTER', roomId:vm.$data.chatId, sender:vm.$data.sender}));
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {

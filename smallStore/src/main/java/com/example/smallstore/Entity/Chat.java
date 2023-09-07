@@ -19,10 +19,10 @@ public class Chat {
     @Id
     private String chatId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String chatFrom;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String chatTo;
 
     @CreationTimestamp

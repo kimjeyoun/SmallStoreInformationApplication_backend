@@ -47,12 +47,15 @@
         },
         methods: {
             findAllRoom: function() {
-                axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; });
+                axios.get('/chat/rooms').then(response => { this.chatrooms = response.data; console.log(this.chatrooms)});
             },
             enterRoom: function(item) {
-                console.log("item : " + item);
-                axios.post('/chat/room?toNickname='+item);
-                location.href="/chat/room/enter/"+chatRoom.roomId;
+                axios.post('/chat/room?toNickname='+item).then(function(res){
+                    localStorage.setItem('wschat.chatId',res.data.chatId);
+                    localStorage.setItem('wschat.sender',res.data.chatFrom);
+                    location.href="/chat/room/enter/"+res.data.chatId;
+                });
+
             }
         }
     });

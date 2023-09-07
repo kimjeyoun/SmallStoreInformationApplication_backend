@@ -29,7 +29,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         //String token = jwtTokenProvider.resolveAccessToken(request);
         String token = jwtTokenProvider.findCookie(request);
-        System.out.println(token);
 
         if(token == null){
             String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
