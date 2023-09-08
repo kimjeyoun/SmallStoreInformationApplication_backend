@@ -50,8 +50,8 @@ public class ChatController {
     // 특정 채팅방 조회
     @GetMapping("/room/{chatId}")
     @ResponseBody
-    public Chat roomInfo(@PathVariable String chatId) {
-        return chatService.findById(chatId);
+    public Chat roomInfo(HttpServletRequest request, @PathVariable String chatId) {
+        return chatService.findById(request, chatId);
     }
 
 }

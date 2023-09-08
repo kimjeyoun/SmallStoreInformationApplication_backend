@@ -42,34 +42,35 @@ public class ChatService {
     public Chat findRoom(HttpServletRequest request, @RequestParam String toNickname) {
         User user = userService.findUserByToken(request);
         List<Chat> chatList = chatRepository.findByChatList(user.getNickname());
-        System.out.println(chatList);
         // 처음 채팅한다면
         if(!chatRepository.existsChatByChatFromAndChatTo(user.getNickname(), toNickname)){
-            System.out.println("처음");
             if(chatList.isEmpty()){
-                System.out.println("first");
                 ChatCreateRequest chatCreateRequest = new ChatCreateRequest();
                 chatCreateRequest.setChatId(UUID.randomUUID().toString());
                 chatCreateRequest.setChatFrom(user.getNickname());
                 chatCreateRequest.setChatTo(toNickname);
                 chatRepository.save(chatCreateRequest.toEntity());
             } else {
-                System.out.println("second");
-                chatList.get(0).setChatTo(chatList.get(0).getChatTo());
+                chatList.get(0).setChatTo(chatList.get(0).getChatFrom());
                 chatList.get(0).setChatFrom(user.getNickname());
-                System.out.println(chatList);
                 Chat chat = chatList.get(0);
                 return chat;
             }
         }
-        System.out.println("third");
         // 만약 이미 생성된 채팅이라면
         Chat chat = chatRepository.findByChatFromAndChatTo(user.getNickname(), toNickname).orElseThrow();
         return chat;
     }
 
     //채팅방 하나 불러오기
-    public Chat findById(String chatId) {
-        return chatRepository.findByChatId(chatId).orElseThrow();
+    public Chat findById(HttpServletRequest request, String chatId) {
+        User user = userService.findUserByToken(request);
+        Chat chat = chatRepository.findByChatId(chatId).orElseThrow();
+        if(!chat.getChatFrom().equals(user.getNickname())){
+            chat.setChatTo(chat.getChatFrom());
+            chat.setChatFrom(user.getNickname());
+            return chat;
+        }
+        return chat;
     }
 }
