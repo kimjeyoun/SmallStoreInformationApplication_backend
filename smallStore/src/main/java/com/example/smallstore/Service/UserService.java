@@ -82,7 +82,7 @@ public class UserService {
     }
 
     // 로그인
-    public ResponseEntity login(UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request){
+    public ResponseEntity login( UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request){
         if(!userRepository.existsById(userLoginRequest.getId())){ // id가 존재하지 않으면
             return ResponseEntity.badRequest().body("이메일이 없습니다. 다시 시도하세요.");
         }

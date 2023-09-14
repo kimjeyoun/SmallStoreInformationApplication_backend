@@ -3,9 +3,8 @@ package com.example.smallstore.Controller;
 import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.Email.*;
 import com.example.smallstore.Service.UserService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
+import io.swagger.v3.oas.annotations.media.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,7 +41,7 @@ public class UserController {
     })
     @ApiOperation(value = "유저 로그인")
     @PostMapping("/login")
-    public void userLogin(UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request, Model model) {
+    public void userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request, Model model) {
         userService.login(userLoginRequest, response, request);
     }
 

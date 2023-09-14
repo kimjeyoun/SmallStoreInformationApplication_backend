@@ -6,6 +6,7 @@ import com.example.smallstore.Entity.User;
 import com.example.smallstore.Repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,47 +20,34 @@ public class ChatService {
     private final UserService userService;
     private final ChatRepository chatRepository;
 
-    public List<String> findAllChatList(HttpServletRequest request){
+    //채팅방 만들기
+    public ResponseEntity createRoom(HttpServletRequest request, String toNickname) {
         User user = userService.findUserByToken(request);
         List<Chat> chatList = chatRepository.findByChatList(user.getNickname());
-        List<String> list = new ArrayList<String>();
-        if(chatRepository.findByChatList(user.getNickname()).isEmpty()){
-            list.add("shopTest");
-            list.add("shopTest2");
-        } else {
-            for(Chat str : chatList){
-                if(str.getChatFrom().equals(user.getNickname())){
-                    list.add(str.getChatTo());
-                } else if (str.getChatTo().equals(user.getNickname())){
-                    list.add(str.getChatFrom());
-                }
+        // 만약 이미 생성된 채팅이라면
+        if(!chatList.isEmpty()){
+            Optional<Chat> chat = chatRepository.findByChatFromAndChatTo(user.getNickname(), toNickname);
+            if(chat.isPresent()){
+                return ResponseEntity.accepted().body(this.findById(request, chat.get().getChatId()));
+            } else {
+                Optional<Chat> chat2 = chatRepository.findByChatFromAndChatTo(toNickname, user.getNickname());
+                return ResponseEntity.accepted().body(this.findById(request, chat2.get().getChatId()));
             }
         }
-        return list;
+        // 처음 채팅한다면
+        ChatCreateRequest chatCreateRequest = new ChatCreateRequest();
+        chatCreateRequest.setChatId(UUID.randomUUID().toString());
+        chatCreateRequest.setChatFrom(user.getNickname());
+        chatCreateRequest.setChatTo(toNickname);
+        chatRepository.save(chatCreateRequest.toEntity());
+        return ResponseEntity.ok(chatCreateRequest);
     }
 
-    //채팅방 찾기
-    public Chat findRoom(HttpServletRequest request, @RequestParam String toNickname) {
+    // 모든 채팅방 가져오기
+    public List<Chat> findAllChatList(HttpServletRequest request){
         User user = userService.findUserByToken(request);
         List<Chat> chatList = chatRepository.findByChatList(user.getNickname());
-        // 처음 채팅한다면
-        if(!chatRepository.existsChatByChatFromAndChatTo(user.getNickname(), toNickname)){
-            if(chatList.isEmpty()){
-                ChatCreateRequest chatCreateRequest = new ChatCreateRequest();
-                chatCreateRequest.setChatId(UUID.randomUUID().toString());
-                chatCreateRequest.setChatFrom(user.getNickname());
-                chatCreateRequest.setChatTo(toNickname);
-                chatRepository.save(chatCreateRequest.toEntity());
-            } else {
-                chatList.get(0).setChatTo(chatList.get(0).getChatFrom());
-                chatList.get(0).setChatFrom(user.getNickname());
-                Chat chat = chatList.get(0);
-                return chat;
-            }
-        }
-        // 만약 이미 생성된 채팅이라면
-        Chat chat = chatRepository.findByChatFromAndChatTo(user.getNickname(), toNickname).orElseThrow();
-        return chat;
+        return chatList;
     }
 
     //채팅방 하나 불러오기

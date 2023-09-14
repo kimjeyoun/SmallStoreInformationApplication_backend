@@ -11,12 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Long> {
-//
-//    @Modifying
-//    @Query("DELETE FROM Shop s WHERE s.shopName = :shopName")
-//    void deleteByShopName(@Param("shopName")String shopName);
-//
-//    @Modifying
-//    @Query("DELETE FROM Shop s WHERE s.user.id = :userId")
-//    void deleteByUserId(@Param("userId")Long userId);
+
 }

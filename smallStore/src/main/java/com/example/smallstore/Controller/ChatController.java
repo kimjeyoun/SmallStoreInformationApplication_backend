@@ -1,8 +1,15 @@
 package com.example.smallstore.Controller;
 
+import com.example.smallstore.Dto.User.UserUpdateRequest;
 import com.example.smallstore.Entity.Chat;
 import com.example.smallstore.Service.ChatService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,38 +23,34 @@ import java.util.List;
 public class ChatController {
     private final ChatService chatService;
 
-    // 채팅 리스트 화면
+    // 채팅방 생성
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "채팅방 생성 완료"),
+            @ApiResponse(code = 202, message = "채팅방 존재하여 존재하는 채팅방으로 보냄")
+    })
+    @ApiOperation(value = "채팅방 생성")
     @GetMapping("/room")
-    public String rooms(Model model) {
-        return "/chat/room";
-    }
-
-    @GetMapping("/login")
-    public String login(Model model) {
-        return "/chat/login";
-    }
-
-    // 채팅방 입장 화면
-    @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(Model model, @PathVariable String roomId) {
-        model.addAttribute("roomId", roomId);
-        return "/chat/roomdetail";
+    @ResponseBody
+    public ResponseEntity createRoom(HttpServletRequest request, @RequestParam String toNickname) {
+        return chatService.createRoom(request, toNickname);
     }
 
     // 모든 채팅방 목록 반환
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "모든 채팅방 목록 반환 완료")
+    })
+    @ApiOperation(value = "모든 채팅방 목록 반환")
     @GetMapping("/rooms")
     @ResponseBody
-    public List<String> room(HttpServletRequest request) {
+    public List<Chat> room(HttpServletRequest request) {
         return chatService.findAllChatList(request);
-    }
-    // 채팅방 생성
-    @PostMapping("/room")
-    @ResponseBody
-    public Chat createRoom(HttpServletRequest request, String toNickname) {
-        return chatService.findRoom(request, toNickname);
     }
 
     // 특정 채팅방 조회
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "특정 채팅방 조회 완료", response = String.class ,responseContainer = "List")
+    })
+    @ApiOperation(value = "특정 채팅방 조회(1대1 톡방 들어갈 수 있음)")
     @GetMapping("/room/{chatId}")
     @ResponseBody
     public Chat roomInfo(HttpServletRequest request, @PathVariable String chatId) {

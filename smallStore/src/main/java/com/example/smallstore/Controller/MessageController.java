@@ -1,6 +1,7 @@
 package com.example.smallstore.Controller;
 
 import com.example.smallstore.Model.ChatMessage;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MessageController {
     private final SimpMessageSendingOperations sendingOperations;
 
+    @ApiOperation(value = "채팅 메시지")
     @MessageMapping("/chat/message")
     public void enter(ChatMessage message) {
         if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
