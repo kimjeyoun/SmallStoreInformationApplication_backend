@@ -23,7 +23,7 @@ public class User {
     private String id;
 
     @ApiModelProperty(value = "email", example = "test@naver.com")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @ApiModelProperty(value = "password", example = "test")

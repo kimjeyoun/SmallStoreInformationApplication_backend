@@ -120,19 +120,13 @@ public class UserService {
     }
 
     // 2차 인증 이메일 보냄
-    public ResponseEntity sendEmail(String email) {
-        try{
-            User user = userRepository.findByEmail(email).orElseThrow();
-            System.out.println(user.getEmail());
-            if(user.isEmailConfirmed()){
-                throw new ErrorException("2차 인증이 완료된 사용자입니다.", NOT_ALLOW_WRITE_EXCEPTION);
-            }
-            emailService.saveDB(email, "auth");
-            return ResponseEntity.ok("이메일이 정상적으로 보내졌습니다.");
-        } catch(Exception e){
-            System.out.println(e.toString());
-            return ResponseEntity.badRequest().body(e);
+    public ResponseEntity sendEmail(String email) throws MessagingException {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        if(user.isEmailConfirmed()){
+            return ResponseEntity.badRequest().body("2차 인증이 완료되었습니다.");
         }
+        emailService.saveDB(email, "auth");
+        return ResponseEntity.ok("이메일이 정상적으로 보내졌습니다.");
     }
 
     // 비밀번호 찾기 이메일 보내기
