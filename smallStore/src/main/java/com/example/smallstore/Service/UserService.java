@@ -52,11 +52,6 @@ public class UserService {
         jwtTokenProvider.setHeaderAccessToken(response, accessToken);
         jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
 
-        // 쿠키 생성 및 토큰 설정
-        Cookie cookie = new Cookie("jwtToken", accessToken);
-        cookie.setPath("/"); // 쿠키 경로 설정 (루트 경로로 설정하여 모든 페이지에서 접근 가능)
-        response.addCookie(cookie);
-
         String ip = this.getClientIp(request);
         refreshTokenService.saveRefreshToken(id, ip, refreshToken);
     }
@@ -82,11 +77,10 @@ public class UserService {
     }
 
     // 로그인
-    public ResponseEntity login( UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request){
+    public ResponseEntity login(UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request){
         if(!userRepository.existsById(userLoginRequest.getId())){ // id가 존재하지 않으면
             return ResponseEntity.badRequest().body("이메일이 없습니다. 다시 시도하세요.");
         }
-
         User user = userRepository.findById(userLoginRequest.getId()).orElseThrow();
 
         if(!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())){ // 비밀번호 틀리면
@@ -181,7 +175,7 @@ public class UserService {
 
     // 토큰에서 정보 가져오기
     public User findUserByToken(HttpServletRequest request) {
-        String id = jwtTokenProvider.getUserId(jwtTokenProvider.findCookie(request));
+        String id = jwtTokenProvider.getUserId(jwtTokenProvider.resolveAccessToken(request));
         User user = userRepository.findById(id).orElseThrow();
         return user;
     }

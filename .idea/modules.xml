@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SmallStoreInformationApplication.iml" filepath="$PROJECT_DIR$/.idea/SmallStoreInformationApplication.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SmallStoreInformationApplication_backend.iml" filepath="$PROJECT_DIR$/.idea/SmallStoreInformationApplication_backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/smallStore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/smallStore.main.iml" />
     </modules>
   </component>

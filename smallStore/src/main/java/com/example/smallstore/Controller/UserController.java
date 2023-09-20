@@ -41,8 +41,8 @@ public class UserController {
     })
     @ApiOperation(value = "유저 로그인")
     @PostMapping("/login")
-    public void userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request, Model model) {
-        userService.login(userLoginRequest, response, request);
+    public ResponseEntity userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request, Model model) {
+        return userService.login(userLoginRequest, response, request);
     }
 
     // 마이페이지 수정
