@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -15,10 +16,12 @@ import java.util.Optional;
 public interface TokenRepository extends JpaRepository<Token, String> {
     Optional<TokenResponse> findByRefreshToken(String refreshToken);
 
+    @Transactional
     @Modifying // 데베 수정 작업 수행하는 메서드
     @Query("DELETE FROM Token t WHERE t.refreshToken = :refreshToken")
     void deleteByRefreshToken(@Param("refreshToken")String refreshToken);
 
+    @Transactional
     @Modifying
     @Query("DELETE FROM Token t WHERE t.expirationDate < :now")
     void deleteByExpirationDate(@Param("now") LocalDateTime now);
