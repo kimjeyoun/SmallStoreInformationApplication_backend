@@ -55,6 +55,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.14.2'
     // JWT Token
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'net.nurigo:sdk:4.3.0'
 }
 
 tasks.named('test') {

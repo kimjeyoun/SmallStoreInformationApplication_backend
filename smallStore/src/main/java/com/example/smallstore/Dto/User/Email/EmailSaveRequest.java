@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Data // get, set 둘 다 됨.
 @RequiredArgsConstructor
 public class EmailSaveRequest {
-    @ApiModelProperty(example="test@naver.com")
-    private String email;
+    @ApiModelProperty(example="01012345678")
+    private String number;
     @ApiModelProperty(example="abc123")
     private String randomCode;
     @ApiModelProperty(example="auth", value="auth/findPW 로 지정해줌(2차인증인지 비밀번호 찾기인지)")
@@ -17,7 +17,7 @@ public class EmailSaveRequest {
 
     public EmailAuth toEntity() {
         return EmailAuth.builder()
-                .email(email)
+                .number(number)
                 .randomCode(randomCode)
                 .type(type)
                 .build();

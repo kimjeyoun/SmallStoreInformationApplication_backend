@@ -2,6 +2,7 @@ package com.example.smallstore.Controller;
 
 import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.Email.*;
+import com.example.smallstore.Service.MessageService;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.media.*;
@@ -21,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
-    private final ChatController chatController;
+    private final MessageService messageService;
 
     // 회원가입
     @ApiResponses( value ={
@@ -76,36 +77,25 @@ public class UserController {
         return userService.deleteUser(userDeleteRequest, request);
     }
 
-    // 2차 인증 이메일 보내기
+    // sms 보내기
     @ApiResponses( value ={
-            @ApiResponse(code = 200, message = "2차 인증 메일을 보냈습니다.")
-            , @ApiResponse(code = 401, message = "2차 인증이 완료된 유저입니다.")
+            @ApiResponse(code = 200, message = "문자를 보냈습니다.")
     })
-    @ApiOperation(value = "2차 인증 이메일 보내기")
-    @PostMapping("/email")
-    public ResponseEntity check(@RequestBody EmailRequest emailRequest) throws MessagingException {
-        return userService.sendEmail(emailRequest.getEmail());
+    @ApiOperation(value = "문자 보내기")
+    @PostMapping("/sms/send")
+    public ResponseEntity sendSMS(@RequestParam String toNumber, String type){
+        return messageService.sendMessage(toNumber, type);
     }
 
-    // 이메일 인증 코드 확인
+    // 인증 번호 확인
     @ApiResponses( value ={
-            @ApiResponse(code = 200, message = "2차 인증 성공하였습니다.")
+            @ApiResponse(code = 200, message = "인증 완료했습니다."),
+            @ApiResponse(code = 500, message = "인증 시간이 지나거나 인증 코드 오류")
     })
-    @ApiOperation(value = "이메일 인증")
-    @PostMapping("/email/emailVerify")
-    public ResponseEntity verify(@RequestBody EmailVerifyRequest emailVerifyRequest) throws MessagingException {
-        return userService.verifyEmail(emailVerifyRequest);
-    }
-
-    // 비밀번호 찾기 이메일 보내기
-    @ApiResponses( value ={
-            @ApiResponse(code = 200, message = "비밀번호 찾기 메일이 보내졌습니다.")
-            , @ApiResponse(code = 400, message = "등록된 이메일과 다릅니다.")
-    })
-    @ApiOperation(value = "비밀번호 찾기 이메일 보내기")
-    @PostMapping("/email/findPW")
-    public ResponseEntity findPW(@RequestBody FindPWRequest findPWRequest) throws MessagingException {
-        return userService.findPW(findPWRequest);
+    @ApiOperation(value = "코드 인증하기")
+    @PostMapping("/sms/verify")
+    public ResponseEntity verifySMS(@RequestParam String toNumber, String user_randomCode){
+        return messageService.verifySMS(toNumber, user_randomCode);
     }
 
     // 비밀번호 변경
@@ -117,4 +107,5 @@ public class UserController {
     public ResponseEntity updatePW(@RequestBody UpdatePWRequest updatePWRequest){
         return userService.updatePW(updatePWRequest);
     }
+
 }

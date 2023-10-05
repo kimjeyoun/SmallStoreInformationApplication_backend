@@ -23,9 +23,9 @@ public class EmailAuth {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "email", example = "test@naver.com")
+    @ApiModelProperty(value = "number", example = "01012345678")
     @Column
-    private String email;
+    private String number;
 
     @ApiModelProperty(value = "type", example = "auth/findPW")
     @Column

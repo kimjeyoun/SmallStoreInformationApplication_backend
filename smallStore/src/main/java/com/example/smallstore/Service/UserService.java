@@ -1,14 +1,10 @@
 package com.example.smallstore.Service;
 
 import com.example.smallstore.Dto.User.*;
-import com.example.smallstore.Dto.User.Email.EmailVerifyRequest;
-import com.example.smallstore.Dto.User.Email.FindPWRequest;
 import com.example.smallstore.Dto.User.Email.UpdatePWRequest;
-import com.example.smallstore.Entity.EmailAuth;
 import com.example.smallstore.Entity.User;
 import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.JWT.JwtTokenProvider;
-import com.example.smallstore.Repository.EmailAuthRepository;
 import com.example.smallstore.Repository.UserRepository;
 import com.example.smallstore.enums.UserRole;
 import com.example.smallstore.enums.VerifyRole;
@@ -16,20 +12,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.smallstore.Error.ErrorCode.ACCESS_DENIED_EXCEPTION;
-import static com.example.smallstore.Error.ErrorCode.NOT_ALLOW_WRITE_EXCEPTION;
 
 
 @Service
@@ -38,8 +29,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final EmailService emailService;
-    private final EmailAuthRepository emailAuthRepository;
     private final RefreshTokenService refreshTokenService;
 
     // 토큰 헤더에 저장
@@ -119,43 +108,43 @@ public class UserService {
         return ResponseEntity.badRequest().body("비밀번호가 맞지 않습니다. 다시 시도하세요.");
     }
 
-    // 2차 인증 이메일 보냄
-    public ResponseEntity sendEmail(String email) throws MessagingException {
-        User user = userRepository.findByEmail(email).orElseThrow();
-        if(user.isEmailConfirmed()){
-            return ResponseEntity.badRequest().body("2차 인증이 완료되었습니다.");
-        }
-        emailService.saveDB(email, "auth");
-        return ResponseEntity.ok("이메일이 정상적으로 보내졌습니다.");
-    }
+//    // 2차 인증 이메일 보냄
+//    public ResponseEntity sendEmail(String email) throws MessagingException {
+//        User user = userRepository.findByEmail(email).orElseThrow();
+//        if(user.isEmailConfirmed()){
+//            return ResponseEntity.badRequest().body("2차 인증이 완료되었습니다.");
+//        }
+//        emailService.saveDB(email, "auth");
+//        return ResponseEntity.ok("이메일이 정상적으로 보내졌습니다.");
+//    }
 
-    // 비밀번호 찾기 이메일 보내기
-    public ResponseEntity findPW(FindPWRequest findPWRequest) throws MessagingException {
-        User user = userRepository.findById(findPWRequest.getId()).orElseThrow();
-        if(!user.getEmail().equals(findPWRequest.getEmail())){
-            return ResponseEntity.badRequest().body("이메일이 맞지 않습니다.");
-        }
-        emailService.saveDB(findPWRequest.getEmail(), "findPW");
-        return ResponseEntity.ok("비밀 번호 찾기 이메일 보냄");
-    }
+//    // 비밀번호 찾기 이메일 보내기
+//    public ResponseEntity findPW(FindPWRequest findPWRequest) throws MessagingException {
+//        User user = userRepository.findById(findPWRequest.getId()).orElseThrow();
+//        if(!user.getEmail().equals(findPWRequest.getEmail())){
+//            return ResponseEntity.badRequest().body("이메일이 맞지 않습니다.");
+//        }
+//        emailService.saveDB(findPWRequest.getEmail(), "findPW");
+//        return ResponseEntity.ok("비밀 번호 찾기 이메일 보냄");
+//    }
 
-    // 이메일 인증 코드 확인
-    public ResponseEntity verifyEmail(EmailVerifyRequest emailVerifyRequest) throws MessagingException {
-        emailService.verifyEmail(emailVerifyRequest.getEmail(), emailVerifyRequest.getRandomCode());
-        User user = userRepository.findByEmail(emailVerifyRequest.getEmail()).orElseThrow();
-        EmailAuth emailAuth = emailAuthRepository.findByEmail(user.getEmail()).orElseThrow();
-        if(emailAuth.getType().equals("auth")){ // 2차인증
-            System.out.println(emailAuth.getType());
-            user.setEmailConfirmed(true);
-            userRepository.save(user);
-        } else if(emailAuth.getType().equals("findPW")){
-            user.setVerifyRole(VerifyRole.valueOf("VERIFYTRUE"));
-            userRepository.save(user);
-        }
-        emailAuthRepository.deleteByEmail(user.getEmail());
-
-        return ResponseEntity.ok("이메일 인증 코드 확인이 완료되었습니다.");
-    }
+//    // 이메일 인증 코드 확인
+//    public ResponseEntity verifyEmail(EmailVerifyRequest emailVerifyRequest) throws MessagingException {
+//        emailService.verifyEmail(emailVerifyRequest.getEmail(), emailVerifyRequest.getRandomCode());
+//        User user = userRepository.findByEmail(emailVerifyRequest.getEmail()).orElseThrow();
+//        EmailAuth emailAuth = emailAuthRepository.findByEmail(user.getEmail()).orElseThrow();
+//        if(emailAuth.getType().equals("auth")){ // 2차인증
+//            System.out.println(emailAuth.getType());
+//            user.setEmailConfirmed(true);
+//            userRepository.save(user);
+//        } else if(emailAuth.getType().equals("findPW")){
+//            user.setVerifyRole(VerifyRole.valueOf("VERIFYTRUE"));
+//            userRepository.save(user);
+//        }
+//        emailAuthRepository.deleteByEmail(user.getEmail());
+//
+//        return ResponseEntity.ok("이메일 인증 코드 확인이 완료되었습니다.");
+//    }
 
     // 비밀번호 변경
     public ResponseEntity updatePW(UpdatePWRequest updatePWRequest){

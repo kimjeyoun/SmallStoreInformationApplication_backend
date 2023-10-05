@@ -12,12 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long> {
-    Optional<EmailAuth> findByEmail(String email);
+    Optional<EmailAuth> findByNumber(String number);
 
-    boolean existsByEmail(String email);
+    boolean existsByNumber(String number);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM EmailAuth e WHERE e.email = :email")
-    void deleteByEmail(@Param("email") String email);
+    @Query("DELETE FROM EmailAuth e WHERE e.number = :number")
+    void deleteByNumber(@Param("number") String number);
 }
