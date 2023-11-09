@@ -30,8 +30,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+
     @Value("${kakao.pw}")
-    final String kakaoPW;
+    private String kakaoPW;
 
     // 토큰 헤더에 저장
     public void setJwtTokenInHeader(String id, HttpServletResponse response, HttpServletRequest request) {

@@ -24,8 +24,6 @@ import javax.transaction.Transactional;
 @Transactional
 public class ShopService {
     private final ShopRepository shopRepository;
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
@@ -70,4 +68,10 @@ public class ShopService {
         shopRepository.save(shop);
         return ResponseEntity.ok("가게 등록이 완료되었습니다.");
     }
+
+    // 조건별로 가게 보여주기
+
+    // 검색
+
+    // 이미지 s3로 왔다갔다
 }
