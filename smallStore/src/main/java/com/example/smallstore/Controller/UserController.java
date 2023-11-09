@@ -98,7 +98,8 @@ public class UserController {
 
     // 비밀번호 변경
     @ApiResponses( value ={
-            @ApiResponse(code = 200, message = "비밀번호 변경이 완료되었습니다.")
+            @ApiResponse(code = 200, message = "비밀번호 변경이 완료되었습니다."),
+            @ApiResponse(code = 200, message = "비밀번호 변경이 안되었습니다.(카카오 로그인)")
     })
     @ApiOperation(value = "비밀번호 변경")
     @PutMapping("/sms/updatePW")

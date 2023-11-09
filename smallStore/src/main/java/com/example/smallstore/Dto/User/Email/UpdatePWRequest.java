@@ -1,6 +1,6 @@
 package com.example.smallstore.Dto.User.Email;
 
-import com.example.smallstore.enums.VerifyRole;
+import com.example.smallstore.enums.LoginType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,5 +12,5 @@ public class UpdatePWRequest {
     private String phone;
     @ApiModelProperty(example="test")
     private String password;
-    private VerifyRole verifyRole;
+    private LoginType loginType;
 }

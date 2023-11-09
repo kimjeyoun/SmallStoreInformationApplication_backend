@@ -7,8 +7,8 @@ import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.JWT.JwtTokenProvider;
 import com.example.smallstore.Repository.UserRepository;
 import com.example.smallstore.enums.UserRole;
-import com.example.smallstore.enums.VerifyRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    @Value("${kakao.pw}")
+    final String kakaoPW;
 
     // 토큰 헤더에 저장
     public void setJwtTokenInHeader(String id, HttpServletResponse response, HttpServletRequest request) {
@@ -54,12 +56,12 @@ public class UserService {
         // 비밀번호 저장
         userSignupRequest.setPassword(passwordEncoder.encode(userSignupRequest.getPassword()));
         if(userSignupRequest.getLoginType().equals("kakaoLogin")){
+            userSignupRequest.setPassword(passwordEncoder.encode(kakaoPW));
             userSignupRequest.setEmailConfirmed(true);
         } else {
             // 2차 인증 이메일 해야함.
             userSignupRequest.setEmailConfirmed(false);
         }
-        userSignupRequest.setVerifyRole(VerifyRole.valueOf("VERIFYFALSE"));
         userRepository.save(userSignupRequest.toEntity());
         this.setJwtTokenInHeader(userSignupRequest.getId(), response, request);
         return ResponseEntity.ok("회원가입 성공."+userSignupRequest);
@@ -111,8 +113,10 @@ public class UserService {
     // 비밀번호 변경
     public ResponseEntity updatePW(UpdatePWRequest updatePWRequest){
         User user = userRepository.findByPhone(updatePWRequest.getPhone()).orElseThrow();
+        if(user.getLoginType().equals("ROLE_KAKAO")){
+            ResponseEntity.badRequest().body("카카오 로그인이라 비밀번호를 변경할 수 없습니다.");
+        }
         updatePWRequest.setPassword(passwordEncoder.encode(updatePWRequest.getPassword()));
-        updatePWRequest.setVerifyRole(VerifyRole.valueOf("VERIFYFALSE"));
         user.updatePW(updatePWRequest);
         userRepository.save(user);
         return ResponseEntity.ok("비밀 번호 변경 완료");

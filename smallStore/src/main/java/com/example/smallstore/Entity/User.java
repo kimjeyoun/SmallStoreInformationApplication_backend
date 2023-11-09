@@ -1,9 +1,9 @@
 package com.example.smallstore.Entity;
 
 import com.example.smallstore.Dto.User.Email.UpdatePWRequest;
+import com.example.smallstore.enums.LoginType;
 import com.example.smallstore.enums.UserRole;
 import com.example.smallstore.Dto.User.UserUpdateRequest;
-import com.example.smallstore.enums.VerifyRole;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.hibernate.annotations.Type;
@@ -50,11 +50,11 @@ public class User {
     @Column(nullable = false, name = "user_role")
     private UserRole userRole;
 
-    // 비밀번호 인증 확인
-    @ApiModelProperty(value = "비밀번호 인증 권한", example = "VERIFYTRUE/VERIFYFALSE")
+    // 로그인 타입
+    @ApiModelProperty(value = "로그인 타입", example = "kakao/local")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private VerifyRole verifyRole;
+    private LoginType loginType;
 
     public void update(UserUpdateRequest userUpdateRequest) {
         this.phone = userUpdateRequest.getPhone();
@@ -65,7 +65,7 @@ public class User {
     public void updatePW(UpdatePWRequest updatePWRequest) {
         this.phone = updatePWRequest.getPhone();
         this.password = updatePWRequest.getPassword();
-        this.verifyRole = updatePWRequest.getVerifyRole();
+        this.loginType = updatePWRequest.getLoginType();
     }
 
 }

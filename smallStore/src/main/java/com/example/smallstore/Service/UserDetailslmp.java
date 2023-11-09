@@ -23,7 +23,7 @@ public class UserDetailslmp implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getEmail();
+        return user.getPassword();
     }
 
     @Override
