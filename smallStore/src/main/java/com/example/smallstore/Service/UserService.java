@@ -108,47 +108,9 @@ public class UserService {
         return ResponseEntity.badRequest().body("비밀번호가 맞지 않습니다. 다시 시도하세요.");
     }
 
-//    // 2차 인증 이메일 보냄
-//    public ResponseEntity sendEmail(String email) throws MessagingException {
-//        User user = userRepository.findByEmail(email).orElseThrow();
-//        if(user.isEmailConfirmed()){
-//            return ResponseEntity.badRequest().body("2차 인증이 완료되었습니다.");
-//        }
-//        emailService.saveDB(email, "auth");
-//        return ResponseEntity.ok("이메일이 정상적으로 보내졌습니다.");
-//    }
-
-//    // 비밀번호 찾기 이메일 보내기
-//    public ResponseEntity findPW(FindPWRequest findPWRequest) throws MessagingException {
-//        User user = userRepository.findById(findPWRequest.getId()).orElseThrow();
-//        if(!user.getEmail().equals(findPWRequest.getEmail())){
-//            return ResponseEntity.badRequest().body("이메일이 맞지 않습니다.");
-//        }
-//        emailService.saveDB(findPWRequest.getEmail(), "findPW");
-//        return ResponseEntity.ok("비밀 번호 찾기 이메일 보냄");
-//    }
-
-//    // 이메일 인증 코드 확인
-//    public ResponseEntity verifyEmail(EmailVerifyRequest emailVerifyRequest) throws MessagingException {
-//        emailService.verifyEmail(emailVerifyRequest.getEmail(), emailVerifyRequest.getRandomCode());
-//        User user = userRepository.findByEmail(emailVerifyRequest.getEmail()).orElseThrow();
-//        EmailAuth emailAuth = emailAuthRepository.findByEmail(user.getEmail()).orElseThrow();
-//        if(emailAuth.getType().equals("auth")){ // 2차인증
-//            System.out.println(emailAuth.getType());
-//            user.setEmailConfirmed(true);
-//            userRepository.save(user);
-//        } else if(emailAuth.getType().equals("findPW")){
-//            user.setVerifyRole(VerifyRole.valueOf("VERIFYTRUE"));
-//            userRepository.save(user);
-//        }
-//        emailAuthRepository.deleteByEmail(user.getEmail());
-//
-//        return ResponseEntity.ok("이메일 인증 코드 확인이 완료되었습니다.");
-//    }
-
     // 비밀번호 변경
     public ResponseEntity updatePW(UpdatePWRequest updatePWRequest){
-        User user = userRepository.findByEmail(updatePWRequest.getEmail()).orElseThrow();
+        User user = userRepository.findByPhone(updatePWRequest.getPhone()).orElseThrow();
         updatePWRequest.setPassword(passwordEncoder.encode(updatePWRequest.getPassword()));
         updatePWRequest.setVerifyRole(VerifyRole.valueOf("VERIFYFALSE"));
         user.updatePW(updatePWRequest);

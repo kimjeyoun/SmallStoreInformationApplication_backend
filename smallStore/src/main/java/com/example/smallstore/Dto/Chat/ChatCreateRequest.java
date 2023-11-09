@@ -1,9 +1,7 @@
 package com.example.smallstore.Dto.Chat;
 
 import com.example.smallstore.Entity.Chat;
-import com.example.smallstore.Entity.EmailAuth;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 

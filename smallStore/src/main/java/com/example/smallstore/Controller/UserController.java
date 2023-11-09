@@ -2,17 +2,15 @@ package com.example.smallstore.Controller;
 
 import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.Email.*;
-import com.example.smallstore.Service.MessageService;
+import com.example.smallstore.Service.SMSService;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.*;
-import io.swagger.v3.oas.annotations.media.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping(value = "/users")
 public class UserController {
     private final UserService userService;
-    private final MessageService messageService;
+    private final SMSService messageService;
 
     // 회원가입
     @ApiResponses( value ={
@@ -103,7 +101,7 @@ public class UserController {
             @ApiResponse(code = 200, message = "비밀번호 변경이 완료되었습니다.")
     })
     @ApiOperation(value = "비밀번호 변경")
-    @PutMapping("/email/updatePW")
+    @PutMapping("/sms/updatePW")
     public ResponseEntity updatePW(@RequestBody UpdatePWRequest updatePWRequest){
         return userService.updatePW(updatePWRequest);
     }

@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 @Data // get, set 둘 다 됨.
 @RequiredArgsConstructor
 public class UpdatePWRequest {
-    @ApiModelProperty(example="test@naver.com")
-    private String email;
+    @ApiModelProperty(example="01012345678")
+    private String phone;
     @ApiModelProperty(example="test")
     private String password;
     private VerifyRole verifyRole;

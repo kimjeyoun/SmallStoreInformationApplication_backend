@@ -1,6 +1,6 @@
 package com.example.smallstore.Repository;
 
-import com.example.smallstore.Entity.EmailAuth;
+import com.example.smallstore.Entity.SMSAuth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface EmailAuthRepository extends JpaRepository<EmailAuth, Long> {
-    Optional<EmailAuth> findByNumber(String number);
+public interface SMSAuthRepository extends JpaRepository<SMSAuth, Long> {
+    Optional<SMSAuth> findByPhone(String phone);
 
-    boolean existsByNumber(String number);
+    boolean existsByPhone(String phone);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM EmailAuth e WHERE e.number = :number")
-    void deleteByNumber(@Param("number") String number);
+    @Query("DELETE FROM SMSAuth e WHERE e.phone = :phone")
+    void deleteByPhone(@Param("phone") String phone);
 }

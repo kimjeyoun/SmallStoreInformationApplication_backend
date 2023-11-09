@@ -22,9 +22,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String id;
 
-    @ApiModelProperty(value = "email", example = "test@naver.com")
-    @Column(nullable = false, unique = true)
-    private String email;
+    @ApiModelProperty(value = "phone", example = "01012345678")
+    @Column(nullable = false)
+    private String phone;
 
     @ApiModelProperty(value = "password", example = "test")
     @Column(nullable = false)
@@ -35,11 +35,11 @@ public class User {
     private String address;
 
     @ApiModelProperty(value = "nickname", example = "test")
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nickname;
 
     // 이메일 2차 인증
-    @ApiModelProperty(value = "이메일 인증 확인", example = "T")
+    @ApiModelProperty(value = "이메일 인증 확인", example = "T/F")
     @Column(nullable = false)
     @Type(type = "true_false")
     private boolean emailConfirmed;
@@ -57,13 +57,13 @@ public class User {
     private VerifyRole verifyRole;
 
     public void update(UserUpdateRequest userUpdateRequest) {
-        this.email = userUpdateRequest.getEmail();
+        this.phone = userUpdateRequest.getPhone();
         this.address = userUpdateRequest.getAddress();
         this.nickname = userUpdateRequest.getNickname();
     }
 
     public void updatePW(UpdatePWRequest updatePWRequest) {
-        this.email = updatePWRequest.getEmail();
+        this.phone = updatePWRequest.getPhone();
         this.password = updatePWRequest.getPassword();
         this.verifyRole = updatePWRequest.getVerifyRole();
     }

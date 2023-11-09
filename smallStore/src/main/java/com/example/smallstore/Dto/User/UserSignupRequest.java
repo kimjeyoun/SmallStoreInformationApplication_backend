@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 public class UserSignupRequest {
     @ApiModelProperty(example = "test")
     private String id;
-    @ApiModelProperty(example = "test@naver.com")
-    private String email;
+    @ApiModelProperty(example = "01012345678")
+    private String phone;
     @ApiModelProperty(example = "test")
     private String password;
     @ApiModelProperty(example = "경기도 군포시")
@@ -24,14 +24,14 @@ public class UserSignupRequest {
     @ApiModelProperty(value = "kakaoLogin/localLogin 로그인인지 구분해줌(db에 저장은 안함), kakao 로그인 시 2차 인증 이메일은 안함.")
     private LoginType loginType;
     private UserRole userRole;
-    @ApiModelProperty(example = "T")
+    @ApiModelProperty(example = "T/F")
     private boolean emailConfirmed;
     private VerifyRole verifyRole;
 
     public User toEntity() {
         return User.builder()
                 .id(id)
-                .email(email)
+                .phone(phone)
                 .password(password)
                 .address(address)
                 .userRole(userRole)

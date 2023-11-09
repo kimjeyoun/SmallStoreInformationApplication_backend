@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserUpdateRequest {
     @ApiModelProperty(example = "test")
-    private String id,email,nickname;
+    private String id,phone,nickname;
     @ApiModelProperty(example = "경기도 군포시")
     private String address;
 
     public User toEntity(){
         return User.builder()
-                .email(email)
+                .phone(phone)
                 .address(address)
                 .nickname(nickname)
                 .build();

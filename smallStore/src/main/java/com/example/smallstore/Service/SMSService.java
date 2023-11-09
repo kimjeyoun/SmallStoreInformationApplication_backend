@@ -1,14 +1,12 @@
 package com.example.smallstore.Service;
 
-import com.example.smallstore.Dto.User.Email.EmailSaveRequest;
-import com.example.smallstore.Entity.EmailAuth;
+import com.example.smallstore.Dto.User.Email.SMSSaveRequest;
+import com.example.smallstore.Entity.SMSAuth;
 import com.example.smallstore.Error.ErrorException;
-import com.example.smallstore.Repository.EmailAuthRepository;
+import com.example.smallstore.Repository.SMSAuthRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
-import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
-import net.nurigo.sdk.message.response.SingleMessageSentResponse;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +21,8 @@ import static com.example.smallstore.Error.ErrorCode.NOT_ALLOW_WRITE_EXCEPTION;
 
 @Service
 @RequiredArgsConstructor
-public class MessageService {
-    private final EmailAuthRepository emailAuthRepository;
+public class SMSService {
+    private final SMSAuthRepository emailAuthRepository;
 
     @Value("${sms.key}")
     private String apiKey;
@@ -69,30 +67,30 @@ public class MessageService {
 
     // 인증 확인
     public ResponseEntity verifySMS(String toNumber, String user_randCode) {
-        EmailAuth emailAuth = emailAuthRepository.findByNumber(toNumber).orElseThrow();
+        SMSAuth emailAuth = emailAuthRepository.findByPhone(toNumber).orElseThrow();
 
         // 현재 시각 가져오기
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         if(currentDateTime.isAfter(emailAuth.getCreatedDate().plusMinutes(10))){
-            emailAuthRepository.deleteByNumber(toNumber);
+            emailAuthRepository.deleteByPhone(toNumber);
             this.sendMessage(toNumber, emailAuth.getType());
             throw new ErrorException("인증 가능 시간이 지났습니다. 다시 시도하세요.", NOT_ALLOW_WRITE_EXCEPTION);
         }
         if(!user_randCode.equals(emailAuth.getRandomCode())){
             throw new ErrorException("랜덤 코드가 틀렸습니다. 다시 한번 시도하세요..", NOT_ALLOW_WRITE_EXCEPTION);
         }
-        emailAuthRepository.deleteByNumber(toNumber);
+        emailAuthRepository.deleteByPhone(toNumber);
         return ResponseEntity.ok("인증 성공하였습니다.");
     }
 
     // 데베에 저장
-    public void saveDB(String number, String type) {
-        if(emailAuthRepository.existsByNumber(number)){
+    public void saveDB(String phone, String type) {
+        if(emailAuthRepository.existsByPhone(phone)){
             throw new ErrorException("이미 인증 번호를 보냈습니다..", NOT_ALLOW_WRITE_EXCEPTION);
         }
-        EmailSaveRequest emailSaveRequest = new EmailSaveRequest();
-        emailSaveRequest.setNumber(number);
+        SMSSaveRequest emailSaveRequest = new SMSSaveRequest();
+        emailSaveRequest.setPhone(phone);
         emailSaveRequest.setRandomCode(randomCode);
         emailSaveRequest.setType(type);
         emailAuthRepository.save(emailSaveRequest.toEntity());

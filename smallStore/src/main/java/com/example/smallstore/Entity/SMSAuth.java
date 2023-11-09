@@ -17,15 +17,15 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Table(name = "emailAuth")
-public class EmailAuth {
+public class SMSAuth {
     @ApiModelProperty(value = "id(auto)", example = "1")
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "number", example = "01012345678")
+    @ApiModelProperty(value = "phone", example = "01012345678")
     @Column
-    private String number;
+    private String phone;
 
     @ApiModelProperty(value = "type", example = "auth/findPW")
     @Column
