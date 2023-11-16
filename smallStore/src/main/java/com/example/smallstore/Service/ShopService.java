@@ -13,10 +13,11 @@ import okhttp3.*;
 import okhttp3.MediaType;
 import org.json.simple.JSONArray;
 import org.springframework.http.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.json.simple.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Service
@@ -26,6 +27,8 @@ public class ShopService {
     private final ShopRepository shopRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final UserService userService;
+    private final S3Serivce s3Serivce;
 
     // 사업자 등록 번호 확인
     public ResponseEntity numberCheck(ShopNumberCheckRequest shopNumberCheckRequest) {
@@ -49,7 +52,6 @@ public class ShopService {
             JSONArray data = (JSONArray) UtilService.stringToJson(response.body().string()).get("data");
             JSONObject data2 = (JSONObject) data.get(0);
             result = (String) data2.get("b_stt_cd");
-            System.out.println(result);
             if(result.equals("01")) {
                 return ResponseEntity.ok("사업자입니다!");
             }
@@ -73,5 +75,58 @@ public class ShopService {
 
     // 검색
 
-    // 이미지 s3로 왔다갔다
+    // 로고 이미지 저장하기
+    public ResponseEntity saveLogoImg(MultipartFile fileName, HttpServletRequest request){
+        if(!s3Serivce.uploadImage(fileName)){
+            return ResponseEntity.badRequest().body("로고 이미지 저장하지 못했습니다.");
+        }
+        User user = userService.findUserByToken(request);
+        Shop shop = shopRepository.findByUser(user).orElseThrow();
+        // db에 로고 파일 이름 저장
+        shop.setShopLogo(fileName.getOriginalFilename());
+
+        return ResponseEntity.ok("로고 이미지 저장했습니다.");
+    }
+
+    // 가게 이미지 저장하기
+    public ResponseEntity saveShopImg(MultipartFile fileName, HttpServletRequest request){
+        if(!s3Serivce.uploadImage(fileName)){
+            return ResponseEntity.badRequest().body("가게 이미지 저장하지 못했습니다.");
+        }
+        User user = userService.findUserByToken(request);
+        Shop shop = shopRepository.findByUser(user).orElseThrow();
+        // db에 로고 파일 이름 저장
+        shop.setShopPicture(fileName.getOriginalFilename());
+
+        return ResponseEntity.ok("가게 이미지 저장했습니다.");
+    }
+
+    // 이미지 가져오기
+    public ResponseEntity downloadLogoImg(String originalFilename){
+        //String imgUrl = s3Serivce.downloadImage(originalFilename);
+
+        //return ResponseEntity.ok(imgUrl);
+        return ResponseEntity.ok(originalFilename);
+    }
+
+    // 로고 이미지 삭제하기
+    public ResponseEntity deleteLogoImage(String originalFilename, HttpServletRequest request){
+        //s3Serivce.deleteImage(originalFilename);
+        User user = userService.findUserByToken(request);
+        Shop shop = shopRepository.findByUser(user).orElseThrow();
+        shop.setShopLogo("");
+
+        return ResponseEntity.ok("삭제 완료했습니다.");
+    }
+
+    // 가게 이미지 삭제하기
+    public ResponseEntity deleteShopImage(String originalFilename, HttpServletRequest request){
+        //s3Serivce.deleteImage(originalFilename);
+        User user = userService.findUserByToken(request);
+        Shop shop = shopRepository.findByUser(user).orElseThrow();
+        shop.setShopPicture("");
+
+        return ResponseEntity.ok("삭제 완료했습니다.");
+    }
+
 }

@@ -1,7 +1,5 @@
 package com.example.smallstore.Controller;
 
-import com.example.smallstore.Dto.Shop.S3.S3DownloadRequest;
-import com.example.smallstore.Dto.Shop.S3.S3UploadRequest;
 import com.example.smallstore.Dto.Shop.ShopNumberCheckRequest;
 import com.example.smallstore.Dto.Shop.ShopRegisterRequest;
 import com.example.smallstore.Repository.ShopRepository;
@@ -11,13 +9,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,14 +48,57 @@ public class ShopController {
 
     // 조건별로 가게 보여주기
 
-    @GetMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestBody S3UploadRequest s3UploadRequest, HttpServletRequest request) throws IOException {
-        return s3Serivce.uploadImage(s3UploadRequest, request);
+    // 로고 이미지 저장
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "로고 이미지 저장했습니다."),
+            @ApiResponse(code = 400, message = "로고 이미지 저장하지 못했습니다.")
+    })
+    @ApiOperation(value = "로고 이미지 저장")
+    @GetMapping("/saveLogoImg")
+    public ResponseEntity<String> saveLogoImg(MultipartFile fileName, HttpServletRequest request) {
+        return shopService.saveLogoImg(fileName, request);
     }
 
-    @GetMapping("/download")
-    public ResponseEntity<String> downloadImage(@RequestBody S3DownloadRequest s3DownloadRequest) {
-        return s3Serivce.downloadImage(s3DownloadRequest);
+    // 가게 이미지 저장
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "가게 이미지 저장했습니다."),
+            @ApiResponse(code = 400, message = "가게 이미지 저장하지 못했습니다.")
+    })
+    @ApiOperation(value = "가게 이미지 저장")
+    @GetMapping("/saveShopImg")
+    public ResponseEntity<String> saveShopImg(MultipartFile fileName, HttpServletRequest request) {
+        return shopService.saveShopImg(fileName, request);
     }
+
+    // 이미지 가져오기
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "이미지 가져오기 성공했습니다.")
+    })
+    @ApiOperation(value = "이미지 가져오기")
+    @GetMapping("/downloadLogoImg")
+    public ResponseEntity<String> downloadLogoImg(String originalFilename) {
+        return shopService.downloadLogoImg(originalFilename);
+    }
+
+    // 로고 이미지 삭제하기
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "로고 이미지 삭제했습니다.")
+    })
+    @ApiOperation(value = "로고 이미지 삭제하기")
+    @DeleteMapping("/deleteLogoImage")
+    public ResponseEntity<String> deleteLogoImage(String originalFilename, HttpServletRequest request) {
+        return shopService.deleteLogoImage(originalFilename, request);
+    }
+
+    // 가게 이미지 삭제하기
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "가게 이미지 삭제했습니다.")
+    })
+    @ApiOperation(value = "가게 이미지 삭제하기")
+    @DeleteMapping("/deleteShopImage")
+    public ResponseEntity<String> deleteShopImage(String originalFilename, HttpServletRequest request) {
+        return shopService.deleteShopImage(originalFilename, request);
+    }
+
 
 }
