@@ -1,5 +1,6 @@
 package com.example.smallstore.Dto.User;
 
+import com.example.smallstore.enums.LoginType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,4 +17,7 @@ public class UserLoginRequest {
 
     @ApiModelProperty(value = "사용자 password", example="test1234")
     private String password;
+
+    @ApiModelProperty(value = "로그인 타입", example="localLogin/kakaoLogin")
+    private LoginType loginType;
 }

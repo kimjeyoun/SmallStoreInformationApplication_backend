@@ -27,10 +27,6 @@ public class SMSAuth {
     @Column
     private String phone;
 
-    @ApiModelProperty(value = "type", example = "auth/findPW")
-    @Column
-    private String type;
-
     @ApiModelProperty(value = "이메일 시간", example = "2023-08-22/01:00")
     @CreationTimestamp
     @DateTimeFormat(pattern = "yyyy-MM-dd/HH:mm:ss")

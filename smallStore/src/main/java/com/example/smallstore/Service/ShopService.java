@@ -1,5 +1,6 @@
 package com.example.smallstore.Service;
 
+import com.example.smallstore.Dto.ResponseDto;
 import com.example.smallstore.Dto.Shop.ShopNumberCheckRequest;
 import com.example.smallstore.Dto.Shop.ShopRegisterRequest;
 import com.example.smallstore.Entity.Category;
@@ -9,6 +10,7 @@ import com.example.smallstore.Repository.CategoryRepository;
 import com.example.smallstore.Repository.ShopRepository;
 import com.example.smallstore.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import okhttp3.*;
 import okhttp3.MediaType;
 import org.json.simple.JSONArray;
@@ -30,11 +32,14 @@ public class ShopService {
     private final UserService userService;
     private final S3Serivce s3Serivce;
 
+    @Value("${shopNum.api}")
+    String api;
+    @Value("${shopNum.serviceKey}")
+    String serviceKey ;
+
     // 사업자 등록 번호 확인
     public ResponseEntity numberCheck(ShopNumberCheckRequest shopNumberCheckRequest) {
         String result;
-        String api = "https://api.odcloud.kr/api/nts-businessman/v1/status?";
-        String serviceKey = "serviceKey=OiJ%2FvDJet5YWO8x6EWtaeg45v4TwLoG%2BLc3CNPvJkbfIeXKrPGnF%2Bk3Gp3ua9Bor4eMgk8JEa9tj%2BVLCcdMlDg%3D%3D" ;
         String apiUrl = api+serviceKey;
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         MediaType mediaType = MediaType.parse("application/json");
@@ -53,9 +58,9 @@ public class ShopService {
             JSONObject data2 = (JSONObject) data.get(0);
             result = (String) data2.get("b_stt_cd");
             if(result.equals("01")) {
-                return ResponseEntity.ok("사업자입니다!");
+                return ResponseEntity.ok(ResponseDto.successRes(200, "사업자 번호 인증 성공"));
             }
-            return ResponseEntity.badRequest().body("사용할 수 없는 사업자등록번호입니다.");
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "사업자 번호 인증 실패"));
         } catch (Exception e) {
             UtilService.ExceptionValue(e.getMessage(), String.class);
             return null;
@@ -68,7 +73,7 @@ public class ShopService {
         Category category = categoryRepository.findByNum(shopRegisterRequest.getCategoryNum()).orElseThrow();
         Shop shop = new Shop(shopRegisterRequest, user, category);
         shopRepository.save(shop);
-        return ResponseEntity.ok("가게 등록이 완료되었습니다.");
+        return ResponseEntity.ok(ResponseDto.successRes(200, "가게 등록 성공"));
     }
 
     // 조건별로 가게 보여주기

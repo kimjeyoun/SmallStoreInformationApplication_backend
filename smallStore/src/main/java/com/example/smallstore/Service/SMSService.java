@@ -1,8 +1,8 @@
 package com.example.smallstore.Service;
 
-import com.example.smallstore.Dto.User.Email.SMSSaveRequest;
+import com.example.smallstore.Dto.ResponseDto;
+import com.example.smallstore.Dto.User.SMS.SMSVerifyRequest;
 import com.example.smallstore.Entity.SMSAuth;
-import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.Repository.SMSAuthRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
@@ -22,7 +22,7 @@ import static com.example.smallstore.Error.ErrorCode.NOT_ALLOW_WRITE_EXCEPTION;
 @Service
 @RequiredArgsConstructor
 public class SMSService {
-    private final SMSAuthRepository emailAuthRepository;
+    private final SMSAuthRepository smsAuthRepository;
 
     @Value("${sms.key}")
     private String apiKey;
@@ -51,7 +51,7 @@ public class SMSService {
     }
 
     // sms 보내기
-    public ResponseEntity sendMessage(String toNumber, String type) {
+    public ResponseEntity sendMessage(String toNumber) {
         createCode(); // 랜덤 인증 코드 생성
         Message message = new Message();
         // 발신번호 및 수신번호는 반드시 01012345678 형태로 입력되어야 합니다.
@@ -61,38 +61,35 @@ public class SMSService {
 
         // 확인하고 싶을때만 주석 풀어서 하기
         //SingleMessageSentResponse response = messageService.sendOne(new SingleMessageSendingRequest(message));
-        this.saveDB(toNumber, type);
-        return ResponseEntity.ok("성공 " + toNumber +","+fromNumber+"," + randomCode);
+        this.saveDB(toNumber, randomCode);
+        return ResponseEntity.ok(ResponseDto.successRes(200, "문자 보내기 성공"));
     }
 
     // 인증 확인
-    public ResponseEntity verifySMS(String toNumber, String user_randCode) {
-        SMSAuth emailAuth = emailAuthRepository.findByPhone(toNumber).orElseThrow();
+    public ResponseEntity verifySMS(String toNumber, String randomCode) {
+        SMSAuth emailAuth = smsAuthRepository.findByPhone(toNumber).orElseThrow();
 
         // 현재 시각 가져오기
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         if(currentDateTime.isAfter(emailAuth.getCreatedDate().plusMinutes(10))){
-            emailAuthRepository.deleteByPhone(toNumber);
-            this.sendMessage(toNumber, emailAuth.getType());
-            throw new ErrorException("인증 가능 시간이 지났습니다. 다시 시도하세요.", NOT_ALLOW_WRITE_EXCEPTION);
+            smsAuthRepository.deleteByPhone(toNumber);
+            // 다시 문자 보냄.
+            this.sendMessage(toNumber);
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "인증 실패/인증 시간이 지남."));
         }
-        if(!user_randCode.equals(emailAuth.getRandomCode())){
-            throw new ErrorException("랜덤 코드가 틀렸습니다. 다시 한번 시도하세요..", NOT_ALLOW_WRITE_EXCEPTION);
+        if(!randomCode.equals(emailAuth.getRandomCode())){
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(401, "인증 실패/인증 코드 오류"));
         }
-        emailAuthRepository.deleteByPhone(toNumber);
-        return ResponseEntity.ok("인증 성공하였습니다.");
+        smsAuthRepository.deleteByPhone(toNumber);
+        return ResponseEntity.ok(ResponseDto.successRes(200, "인증 성공"));
     }
 
     // 데베에 저장
-    public void saveDB(String phone, String type) {
-        if(emailAuthRepository.existsByPhone(phone)){
-            throw new ErrorException("이미 인증 번호를 보냈습니다..", NOT_ALLOW_WRITE_EXCEPTION);
-        }
-        SMSSaveRequest emailSaveRequest = new SMSSaveRequest();
-        emailSaveRequest.setPhone(phone);
-        emailSaveRequest.setRandomCode(randomCode);
-        emailSaveRequest.setType(type);
-        emailAuthRepository.save(emailSaveRequest.toEntity());
+    public void saveDB(String toNumber, String randomCode) {
+        SMSVerifyRequest smsVerifyRequest = new SMSVerifyRequest();
+        smsVerifyRequest.setPhone(toNumber);
+        smsVerifyRequest.setRandomCode(randomCode);
+        smsAuthRepository.save(smsVerifyRequest.toEntity());
     }
 }

@@ -25,8 +25,8 @@ public class ShopController {
 
     // 사업자 등록 번호 상태 확인(운영하고 있는지 확인)
     @ApiResponses( value ={
-            @ApiResponse(code = 200, message = "사용 가능한 사업자 번호입니다.")
-            , @ApiResponse(code = 400, message = "사용 불가능한 사업자 번호입니다.")
+            @ApiResponse(code = 200, message = "사업자 번호 인증 성공")
+            , @ApiResponse(code = 400, message = "사업자 번호 인증 실패")
     })
     @ApiOperation(value = "사업자등록번호 상태 확인")
     @PostMapping("shopNumStatus")
@@ -36,7 +36,7 @@ public class ShopController {
 
     // 가게 등록
     @ApiResponses( value ={
-            @ApiResponse(code = 200, message = "가게 등록이 완료되었습니다.")
+            @ApiResponse(code = 200, message = "가게 등록 성공")
     })
     @ApiOperation(value = "가게 등록")
     @PostMapping("/regist")
