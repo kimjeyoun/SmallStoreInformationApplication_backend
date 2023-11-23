@@ -24,7 +24,7 @@ public class UserSignupRequest {
     private LoginType loginType;
     private UserRole userRole;
     @ApiModelProperty(example = "T/F")
-    private boolean emailConfirmed;
+    private boolean secondConfirmed;
 
     public User toEntity() {
         return User.builder()
@@ -34,7 +34,7 @@ public class UserSignupRequest {
                 .address(address)
                 .userRole(userRole)
                 .nickname(nickname)
-                .emailConfirmed(emailConfirmed)
+                .secondConfirmed(secondConfirmed)
                 .loginType(loginType)
                 .build();
     }

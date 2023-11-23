@@ -9,7 +9,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserUpdateRequest {
     @ApiModelProperty(example = "test")
-    private String id,phone,nickname;
+    private String id,nickname;
+
+    @ApiModelProperty(example = "01012345678")
+    private String phone;
+
     @ApiModelProperty(example = "경기도 군포시")
     private String address;
 

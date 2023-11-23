@@ -1,4 +1,4 @@
-package com.example.smallstore.Dto.User.Email;
+package com.example.smallstore.Dto.User.SMS;
 
 import com.example.smallstore.enums.LoginType;
 import io.swagger.annotations.ApiModelProperty;

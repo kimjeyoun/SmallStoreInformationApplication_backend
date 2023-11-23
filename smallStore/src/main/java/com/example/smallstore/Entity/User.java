@@ -1,6 +1,6 @@
 package com.example.smallstore.Entity;
 
-import com.example.smallstore.Dto.User.Email.UpdatePWRequest;
+import com.example.smallstore.Dto.User.SMS.UpdatePWRequest;
 import com.example.smallstore.enums.LoginType;
 import com.example.smallstore.enums.UserRole;
 import com.example.smallstore.Dto.User.UserUpdateRequest;
@@ -39,10 +39,10 @@ public class User {
     private String nickname;
 
     // 이메일 2차 인증
-    @ApiModelProperty(value = "이메일 인증 확인", example = "T/F")
+    @ApiModelProperty(value = "2차 인증 확인", example = "T/F")
     @Column(nullable = false)
     @Type(type = "true_false")
-    private boolean emailConfirmed;
+    private boolean secondConfirmed;
 
     // 유저 권한
     @ApiModelProperty(value = "유저 권한", example = "USER/SHOPOWNER")
