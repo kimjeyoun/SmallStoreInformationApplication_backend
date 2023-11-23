@@ -3,7 +3,6 @@ package com.example.smallstore.Service;
 import com.example.smallstore.Dto.ResponseDto;
 import com.example.smallstore.Dto.User.SMS.SMSVerifyRequest;
 import com.example.smallstore.Entity.SMSAuth;
-import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.Repository.SMSAuthRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.sdk.NurigoApp;
