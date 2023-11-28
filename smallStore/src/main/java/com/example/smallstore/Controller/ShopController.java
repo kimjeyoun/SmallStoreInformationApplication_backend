@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class ShopController {
     })
     @ApiOperation(value = "가게 보여주기", notes = "거리(10km)로 가게를 보여줌.")
     @GetMapping("/showShop")
-    public ResponseEntity<SearchShopResponse> showShop(@RequestBody SearchShopRequest searchShopRequest) {
+    public ResponseEntity<List<SearchShopResponse>> showShop(@RequestBody SearchShopRequest searchShopRequest) {
         return shopService.showShop(searchShopRequest);
     }
 
@@ -64,7 +65,7 @@ public class ShopController {
     })
     @ApiOperation(value = "가게 검색", notes = "body 중 keyword 만 보내면 됨.")
     @GetMapping("/searchShop")
-    public ResponseEntity<SearchShopResponse> searchShop(@RequestBody SearchShopRequest searchShopRequest) {
+    public ResponseEntity<List<SearchShopResponse>> searchShop(@RequestBody SearchShopRequest searchShopRequest) {
         return shopService.searchShop(searchShopRequest);
     }
 

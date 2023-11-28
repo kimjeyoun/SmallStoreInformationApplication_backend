@@ -32,7 +32,7 @@ public class Shop {
     private String shopNumber;
 
     @ApiModelProperty(value = "가게 주인", example = "user_nickname")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
@@ -59,7 +59,7 @@ public class Shop {
     private String shopPicture;
 
     @ApiModelProperty(value = "가게 카테고리", example = "1")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_num")
     @JsonIgnore
     private Category category;

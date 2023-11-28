@@ -12,7 +12,6 @@ import java.util.*;
 @Repository
 public interface ShopRepository extends JpaRepository<Shop, Long> {
     Optional<Shop> findByUser(User user);
-    List<Shop> findAllByShopAddressLike(String shopAddress);
     List<Shop> findAllByShopNameContaining(String keyword);
 
     @Query(value = "SELECT * FROM Shop s " +
