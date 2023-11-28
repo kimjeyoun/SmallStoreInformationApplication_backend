@@ -3,6 +3,7 @@ package com.example.smallstore.Controller;
 import com.example.smallstore.Dto.ResponseDto;
 import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.SMS.*;
+import com.example.smallstore.Entity.User;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class UserController {
     })
     @ApiOperation(value = "유저 회원가입", response = ResponseDto.class)
     @PostMapping("/signup")
-    public ResponseEntity userSignUp(@RequestBody UserSignupRequest userSignupRequest, HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<ResponseDto> userSignUp(@RequestBody UserSignupRequest userSignupRequest, HttpServletResponse response, HttpServletRequest request) {
         return userService.signup(userSignupRequest, response, request);
     }
 
@@ -38,7 +39,7 @@ public class UserController {
     })
     @ApiOperation(value = "유저 로그인", response = ResponseDto.class)
     @PostMapping("/login")
-    public ResponseEntity userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request) {
+    public ResponseEntity<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request) {
         return userService.login(userLoginRequest, response, request);
     }
 
@@ -48,7 +49,7 @@ public class UserController {
     })
     @ApiOperation(value = "유저 정보 수정", response = ResponseDto.class)
     @PutMapping("/mypage")
-    public ResponseEntity updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+    public ResponseEntity<User> updateUser(@RequestBody UserUpdateRequest userUpdateRequest) {
         return userService.updateUser(userUpdateRequest);
     }
 
@@ -58,7 +59,7 @@ public class UserController {
     })
     @ApiOperation(value = "유저 로그아웃", response = ResponseDto.class)
     @GetMapping("/logout")
-    public ResponseEntity logout(HttpServletRequest request) {
+    public ResponseEntity<ResponseDto> logout(HttpServletRequest request) {
         return userService.logout(request);
     }
 
@@ -69,7 +70,7 @@ public class UserController {
     })
     @ApiOperation(value = "유저 탈퇴", response = ResponseDto.class)
     @DeleteMapping()
-    public ResponseEntity delete(@RequestBody UserDeleteRequest userDeleteRequest, HttpServletRequest request) {
+    public ResponseEntity<ResponseDto> delete(@RequestBody UserDeleteRequest userDeleteRequest, HttpServletRequest request) {
         return userService.deleteUser(userDeleteRequest, request);
     }
 
@@ -78,9 +79,9 @@ public class UserController {
             @ApiResponse(code = 200, message = "2차 인증 문자 보내기 성공"),
             @ApiResponse(code = 400, message = "2차 인증 문자 보내기 실패/회원가입이 제대로 되지 않음")
     })
-    @ApiOperation(value = "2차 인증 문자 보내기", notes = "회원가입 후 2차 인증이 이루어져야합니다.",response = ResponseDto.class)
+    @ApiOperation(value = "2차 인증 문자 보내기", notes = "회원가입 후 2차 인증이 이루어져야합니다.")
     @PostMapping("/sms/confirmed")
-    public ResponseEntity secondConfirmed(@RequestBody UserConfirmedRequest userConfirmedRequest){
+    public ResponseEntity<ResponseDto> secondConfirmed(@RequestBody UserConfirmedRequest userConfirmedRequest){
         return userService.secondConfirmed(userConfirmedRequest);
     }
 
@@ -91,7 +92,7 @@ public class UserController {
     })
     @ApiOperation(value = "비밀번호 찾기 문자 보내기", response = ResponseDto.class)
     @PostMapping("/sms/findPW")
-    public ResponseEntity findPW(@RequestBody FindPWRequest findPWRequest){
+    public ResponseEntity<ResponseDto> findPW(@RequestBody FindPWRequest findPWRequest){
         return userService.findPW(findPWRequest);
     }
 
@@ -103,7 +104,7 @@ public class UserController {
     })
     @ApiOperation(value = "인증 확인", response = ResponseDto.class)
     @PostMapping("/sms/verify")
-    public ResponseEntity verifyCode(@RequestBody SMSVerifyRequest smsVerifyRequest){
+    public ResponseEntity<ResponseDto> verifyCode(@RequestBody SMSVerifyRequest smsVerifyRequest){
         return userService.verifyCode(smsVerifyRequest);
     }
 
@@ -114,7 +115,7 @@ public class UserController {
     })
     @ApiOperation(value = "비밀번호 변경", response = ResponseDto.class)
     @PutMapping("/updatePW")
-    public ResponseEntity updatePW(@RequestBody UpdatePWRequest updatePWRequest){
+    public ResponseEntity<ResponseDto> updatePW(@RequestBody UpdatePWRequest updatePWRequest){
         return userService.updatePW(updatePWRequest);
     }
 

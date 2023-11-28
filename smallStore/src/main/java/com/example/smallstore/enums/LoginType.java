@@ -10,5 +10,4 @@ public enum LoginType {
     kakaoLogin("ROLE_KAKAO");
 
     private final String value;
-
 }

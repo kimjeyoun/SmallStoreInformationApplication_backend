@@ -17,8 +17,6 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-import static com.example.smallstore.Error.ErrorCode.NOT_ALLOW_WRITE_EXCEPTION;
-
 @Service
 @RequiredArgsConstructor
 public class SMSService {
@@ -30,13 +28,15 @@ public class SMSService {
     private String apiSecretKey;
     @Value("${sms.fromNumber}")
     private String fromNumber;
+    @Value("${sms.apiUrl}")
+    private String apiUrl;
     String randomCode = "";
 
     private DefaultMessageService messageService;
 
     @PostConstruct
     private void init(){
-        this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecretKey, "https://api.coolsms.co.kr");
+        this.messageService = NurigoApp.INSTANCE.initialize(apiKey, apiSecretKey, apiUrl);
     }
 
     // 인증 코드 생성

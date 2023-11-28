@@ -5,10 +5,8 @@ import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.SMS.SMSVerifyRequest;
 import com.example.smallstore.Dto.User.SMS.UpdatePWRequest;
 import com.example.smallstore.Entity.User;
-import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.JWT.JwtTokenProvider;
 import com.example.smallstore.Repository.UserRepository;
-import com.example.smallstore.enums.LoginType;
 import com.example.smallstore.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +73,7 @@ public class UserService {
     }
 
     // 로그인
-    public ResponseEntity login(@NotNull UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request){
+    public ResponseEntity login(UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request){
         if(!userRepository.existsById(userLoginRequest.getId())){ // id가 존재하지 않으면
             return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "로그인 실패/id 없음"));
         }
@@ -164,7 +162,7 @@ public class UserService {
         updatePWRequest.setPassword(passwordEncoder.encode(updatePWRequest.getPassword()));
         user.updatePW(updatePWRequest);
         userRepository.save(user);
-        return ResponseEntity.ok(ResponseDto.failRes(200, "비밀번호 변경 성공"));
+        return ResponseEntity.ok(ResponseDto.successRes(200, "비밀번호 변경 성공"));
     }
 
     // 토큰에서 정보 가져오기

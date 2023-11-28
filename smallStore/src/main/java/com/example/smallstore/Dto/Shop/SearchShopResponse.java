@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data // get, set 둘 다 됨.
 @RequiredArgsConstructor
-public class ShopRegisterRequest {
+public class SearchShopResponse {
     @ApiModelProperty(example = "어디있숍")
     private String shopName;
     @ApiModelProperty(example = "0000000001")
@@ -26,5 +26,15 @@ public class ShopRegisterRequest {
     private String shopPicture;
     @ApiModelProperty(example = "1")
     private Long categoryNum;
-}
 
+    public SearchShopResponse(Shop shop) {
+        this.shopName = shop.getShopName();
+        this.shopNumber = shop.getShopNumber();
+        this.id = shop.getUser().getId();
+        this.shopAddress = shop.getShopAddress();
+        this.shopPhoneNumber = shop.getShopPhoneNumber();
+        this.shopLogo = shop.getShopLogo();
+        this.shopPicture = shop.getShopPicture();
+        this.categoryNum = shop.getCategory().getNum();
+    }
+}
