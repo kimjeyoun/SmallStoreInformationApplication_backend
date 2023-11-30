@@ -1,6 +1,7 @@
 package com.example.smallstore.Entity;
 
 import com.example.smallstore.Dto.User.SMS.UpdatePWRequest;
+import com.example.smallstore.Dto.User.UserAddWishListRequest;
 import com.example.smallstore.enums.LoginType;
 import com.example.smallstore.enums.UserRole;
 import com.example.smallstore.Dto.User.UserUpdateRequest;
@@ -9,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -44,6 +46,10 @@ public class User {
     @Type(type = "true_false")
     private boolean secondConfirmed;
 
+    @ApiModelProperty(value = "찜 목록", example = " ['1','2','4'] ")
+    @ElementCollection
+    private List<Long> wishList;
+
     // 유저 권한
     @ApiModelProperty(value = "유저 권한", example = "USER/SHOPOWNER")
     @Enumerated(EnumType.STRING)
@@ -66,6 +72,10 @@ public class User {
         this.phone = updatePWRequest.getPhone();
         this.password = updatePWRequest.getPassword();
         this.loginType = updatePWRequest.getLoginType();
+    }
+
+    public void updateWishList(UserAddWishListRequest userAddWishListRequest) {
+        this.wishList.add(userAddWishListRequest.getNum());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.smallstore.Controller;
 
 import com.example.smallstore.Dto.ResponseDto;
+import com.example.smallstore.Dto.Shop.SearchShopResponse;
 import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.SMS.*;
 import com.example.smallstore.Entity.User;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 @Controller
@@ -117,6 +119,26 @@ public class UserController {
     @PutMapping("/updatePW")
     public ResponseEntity<ResponseDto> updatePW(@RequestBody UpdatePWRequest updatePWRequest){
         return userService.updatePW(updatePWRequest);
+    }
+
+    // 가게 찜 목록 관리(추가, 삭제)
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "true = 추가 / false = 삭제")
+    })
+    @ApiOperation(value = "찜 목록 관리(추가, 삭제)")
+    @PostMapping("/manageWishList")
+    public boolean manageWishList(@RequestBody UserAddWishListRequest userAddWishListRequest){
+        return userService.addWishList(userAddWishListRequest);
+    }
+
+    // 가게 찜 목록 보여주기
+    @ApiResponses( value ={
+            @ApiResponse(code = 200, message = "찜 목록")
+    })
+    @ApiOperation(value = "찜 목록 보여주기")
+    @GetMapping("/showWishList")
+    public ResponseEntity<List<SearchShopResponse>> showWishList(@RequestBody UserAddWishListRequest userAddWishListRequest){
+        return userService.showWishList(userAddWishListRequest);
     }
 
 }

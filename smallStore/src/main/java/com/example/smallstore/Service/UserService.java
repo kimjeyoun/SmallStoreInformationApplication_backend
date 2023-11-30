@@ -1,15 +1,17 @@
 package com.example.smallstore.Service;
 
 import com.example.smallstore.Dto.ResponseDto;
+import com.example.smallstore.Dto.Shop.SearchShopResponse;
 import com.example.smallstore.Dto.User.*;
 import com.example.smallstore.Dto.User.SMS.SMSVerifyRequest;
 import com.example.smallstore.Dto.User.SMS.UpdatePWRequest;
+import com.example.smallstore.Entity.Shop;
 import com.example.smallstore.Entity.User;
 import com.example.smallstore.JWT.JwtTokenProvider;
+import com.example.smallstore.Repository.ShopRepository;
 import com.example.smallstore.Repository.UserRepository;
 import com.example.smallstore.enums.UserRole;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.smallstore.Error.ErrorCode.ACCESS_DENIED_EXCEPTION;
-
-
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -34,6 +33,7 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final SMSService messageService;
+    private final ShopRepository shopRepository;
 
     @Value("${kakao.pw}")
     private String kakaoPW;
@@ -163,6 +163,44 @@ public class UserService {
         user.updatePW(updatePWRequest);
         userRepository.save(user);
         return ResponseEntity.ok(ResponseDto.successRes(200, "비밀번호 변경 성공"));
+    }
+
+    // 찜 목록 관리
+    public boolean addWishList(UserAddWishListRequest userAddWishListRequest){
+        User user = userRepository.findById(userAddWishListRequest.getId()).orElseThrow();
+        boolean check = false;
+
+        if(user.getWishList().contains(userAddWishListRequest.getNum())){
+            user.getWishList().remove(Long.valueOf(userAddWishListRequest.getNum()));
+            check = false;
+        } else {
+            user.updateWishList(userAddWishListRequest);
+            check = true;
+        }
+        userRepository.save(user);
+        return check;
+    }
+
+    // 찜 목록 추가
+    public ResponseEntity showWishList(UserAddWishListRequest userAddWishListRequest){
+        User user = userRepository.findById(userAddWishListRequest.getId()).orElseThrow();
+        if(user.getWishList().isEmpty()){
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "찜 목록이 없음."));
+        }
+        List<SearchShopResponse> shopList = new ArrayList<>();
+        for(long i : user.getWishList()){
+            SearchShopResponse dto = this.showWishShop(Long.valueOf(i));
+            shopList.add(dto);
+        }
+
+        return ResponseEntity.ok(ResponseDto.res(200, "찜 목록 보냄.", shopList));
+    }
+
+    // 찜 목록으로 가게 불러오기
+    public SearchShopResponse showWishShop(Long shopNum){
+        Shop shop = shopRepository.findById(shopNum).orElseThrow();
+        SearchShopResponse searchShopResponse = new SearchShopResponse(shop);
+        return searchShopResponse;
     }
 
     // 토큰에서 정보 가져오기
