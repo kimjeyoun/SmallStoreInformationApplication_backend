@@ -36,7 +36,7 @@ public class ShopService {
     private final CategoryRepository categoryRepository;
     private final UserService userService;
     private final S3Serivce s3Serivce;
-    private final GetGpsService getGpsService;
+    private final GpsService getGpsService;
 
     @Value("${shopNum.api}")
     private String api;

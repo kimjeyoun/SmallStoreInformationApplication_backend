@@ -1,6 +1,7 @@
 package com.example.smallstore.JWT;
 
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println(path);
 
-        if (path.startsWith("/swagger-ui") || path.contains("/favicon.ico") || path.contains("/swagger-resources") || path.startsWith("/webjars") || path.startsWith("/ws") || path.contains("/v2/api-docs") || path.contains("/users/login") || path.contains("/users/signup")  || path.contains("/users/updatePW")  || path.startsWith("/users/sms")) {
+        if (path.startsWith("/swagger-ui") || path.contains("/favicon.ico") || path.contains("/swagger-resources") || path.startsWith("/webjars") || path.startsWith("/ws") || path.contains("/v2/api-docs") || path.contains("/users/login") || path.contains("/users/signup")  || path.contains("/users/updatePW")  || path.startsWith("/users/sms") || path.contains("/users/kakaoLogin")) {
             System.out.println("check");
             filterChain.doFilter(request, response);
             return;
@@ -32,7 +33,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         if(token == null){
             String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
             if (jwtTokenProvider.validateToken(refreshToken)) {
-                token = jwtTokenProvider.reissueAccessToken(refreshToken);
+                try {
+                    token = jwtTokenProvider.reissueAccessToken(refreshToken);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
                 jwtTokenProvider.setHeaderAccessToken(response, token);
                 this.setAuthentication(token);
             }

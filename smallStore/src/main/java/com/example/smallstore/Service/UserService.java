@@ -10,8 +10,10 @@ import com.example.smallstore.Entity.User;
 import com.example.smallstore.JWT.JwtTokenProvider;
 import com.example.smallstore.Repository.ShopRepository;
 import com.example.smallstore.Repository.UserRepository;
+import com.example.smallstore.enums.LoginType;
 import com.example.smallstore.enums.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class UserService {
     private final RefreshTokenService refreshTokenService;
     private final SMSService messageService;
     private final ShopRepository shopRepository;
+    private final KakaoApi kakaoApi;
 
     @Value("${kakao.pw}")
     private String kakaoPW;
@@ -52,6 +56,20 @@ public class UserService {
         refreshTokenService.saveRefreshToken(id, ip, refreshToken);
     }
 
+    // 카톡 토큰 헤더에 저장
+    public void setJwtKakaoTokenInHeader(String id, HttpServletResponse response, HttpServletRequest request, Map map) {
+        UserRole userRole = userRepository.findById(id).orElseThrow().getUserRole();
+
+        String accessToken = jwtTokenProvider.createKakaToken(id, userRole, Long.parseLong(map.get("expires_in").toString()), map.get("access_Token").toString());
+        String refreshToken = jwtTokenProvider.createKakaToken(id, userRole, Long.parseLong(map.get("refresh_token_expires_in").toString()), map.get("refresh_Token").toString());
+
+        jwtTokenProvider.setHeaderAccessToken(response, accessToken);
+        jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
+
+        String ip = this.getClientIp(request);
+        refreshTokenService.saveRefreshToken(id, ip, refreshToken);
+    }
+
     // 회원가입
     public ResponseEntity signup(UserSignupRequest userSignupRequest, HttpServletResponse response, HttpServletRequest request) {
         // 아이디가 있으면 에러 던짐.
@@ -60,7 +78,9 @@ public class UserService {
         }
         // 비밀번호 저장
         userSignupRequest.setPassword(passwordEncoder.encode(userSignupRequest.getPassword()));
-        if(userSignupRequest.getLoginType().equals("kakaoLogin")){
+        System.out.println(userSignupRequest);
+        if(userSignupRequest.getLoginType().equals(LoginType.kakaoLogin)){
+            System.out.println("check");
             userSignupRequest.setPassword(passwordEncoder.encode(kakaoPW));
             userSignupRequest.setSecondConfirmed(true);
         } else {
@@ -79,19 +99,32 @@ public class UserService {
         }
         User user = userRepository.findById(userLoginRequest.getId()).orElseThrow();
 
-        if(!userLoginRequest.getLoginType().equals("ROLE_KAKAO")){
-            if(!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())){ // 비밀번호 틀리면
-                return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "로그인 실패/비번 틀림"));
-            }
-            if(!user.isSecondConfirmed()){
-                return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "로그인 실패/2차 인증 안됨"));
-            }
+        if(!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())){ // 비밀번호 틀리면
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "로그인 실패/비번 틀림"));
+        }
+        if(!user.isSecondConfirmed()){
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "로그인 실패/2차 인증 안됨"));
         }
 
         this.setJwtTokenInHeader(userLoginRequest.getId(), response, request);
 
         // 로그인 성공 시
         return ResponseEntity.ok(ResponseDto.res(200, "로그인 성공", user));
+    }
+
+    // 카카오 로그인
+    public ResponseEntity kakaoLogin(String code, HttpServletResponse response, HttpServletRequest request) throws ParseException {
+        Map token = kakaoApi.getToken(code);
+        if(token.isEmpty()){
+            return ResponseEntity.badRequest().body(ResponseDto.failRes(400, "카카오 로그인 실패"));
+        }
+        Map userMap = kakaoApi.getUserInfo(token);
+        if (!userRepository.existsById(userMap.get("email").toString())) {
+            return ResponseEntity.ok(ResponseDto.res(201, "카카오 로그인 실패/회원가입 필요", userMap));
+        }
+        User user = userRepository.findById(userMap.get("email").toString()).orElseThrow();
+        this.setJwtKakaoTokenInHeader(userMap.get("email").toString(), response, request, token);
+        return ResponseEntity.ok(ResponseDto.res(200, "카카오 로그인 성공", user));
     }
 
     // 마이페이지 수정

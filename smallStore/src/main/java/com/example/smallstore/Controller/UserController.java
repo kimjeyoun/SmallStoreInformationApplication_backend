@@ -8,6 +8,7 @@ import com.example.smallstore.Entity.User;
 import com.example.smallstore.Service.UserService;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,18 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response, HttpServletRequest request) {
         return userService.login(userLoginRequest, response, request);
+    }
+
+    // 카카오 로그인
+    @ApiResponses(value ={
+            @ApiResponse(code = 200, message = "카카오 로그인 성공(user를 보냄)"),
+            @ApiResponse(code = 201, message = "카카오 로그인 실패/회원가입 필요(userMap(email(id), nickname(null 이 있을수도있음)를 보냄)"),
+            @ApiResponse(code = 400, message = "카카오 로그인 실패/카카오 api에서 문제 생김")
+    })
+    @ApiOperation(value = "유저 카카오 로그인")
+    @GetMapping("/kakaoLogin")
+    public ResponseEntity<User> userKakaoLogin(@RequestParam String code, HttpServletResponse response, HttpServletRequest request) throws ParseException {
+        return userService.kakaoLogin(code, response, request);
     }
 
     // 마이페이지 수정

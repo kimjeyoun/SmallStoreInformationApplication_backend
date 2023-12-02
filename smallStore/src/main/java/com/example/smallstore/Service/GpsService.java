@@ -19,14 +19,14 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class GetGpsService {
+public class GpsService {
     @Value("${kakao.apiKey}")
     private String apiKey;
 
-    @Value("${kakao.getUrl}")
+    @Value("${kakao.getGPS}")
     private String getUrl ;
 
-    @Value("${kakao.postUrl}")
+    @Value("${kakao.getAddress}")
     private String postUrl ;
 
     public String getGps(String stringAddress){

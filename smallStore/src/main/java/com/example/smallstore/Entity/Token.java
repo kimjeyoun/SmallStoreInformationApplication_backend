@@ -23,7 +23,7 @@ public class Token {
     @Column(unique = true, nullable = false)
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String refreshToken;
 
     @Column(nullable = false)

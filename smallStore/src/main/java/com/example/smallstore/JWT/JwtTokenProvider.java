@@ -4,12 +4,14 @@ import com.example.smallstore.Error.ErrorCode;
 import com.example.smallstore.Error.ErrorException;
 import com.example.smallstore.Repository.UserRepository;
 import com.example.smallstore.Service.CustomUserDetailService;
+import com.example.smallstore.Service.KakaoApi;
 import com.example.smallstore.Service.SchedulerService;
 import com.example.smallstore.enums.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class JwtTokenProvider {
     private final UserRepository userRepository;
     private final CustomUserDetailService customUserDetailService;
     private final SchedulerService schedulerService;
+    private final KakaoApi kakaoApi;
 
     // 키
     @Value("${jwt.secret}")
@@ -73,6 +77,23 @@ public class JwtTokenProvider {
                 .compact(); // 생성
     }
 
+    // Create kakaoToken
+    public String createKakaToken(String id, UserRole userRole, long tokenValid, String accessToken) {
+        Claims claims = Jwts.claims().setSubject(id); // claims 생성 및 payload 설정
+        claims.put("roles", userRole.toString()); // 권한 설정, key/ value 쌍으로 저장
+        claims.put("token", accessToken);
+
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        Date date = new Date();
+
+        return Jwts.builder()
+                .setClaims(claims) // 발행 유저 정보 저장
+                .setIssuedAt(date) // 발행 시간 저장
+                .setExpiration(new Date(date.getTime() + tokenValid)) // 토큰 유효 시간 저장
+                .signWith(key, SignatureAlgorithm.HS256) // 해싱 알고리즘 및 키 설정
+                .compact(); // 생성
+    }
+
     // JWT 토큰에서 인증 정보 조회
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         UserDetails userDetails = customUserDetailService.loadUserByUsername(this.getUserId(token));
@@ -100,13 +121,31 @@ public class JwtTokenProvider {
     }
 
     // accessToken 재발행
-    public String reissueAccessToken(String refreshToken) {
+    public String reissueAccessToken(String refreshToken) throws ParseException {
         String id = this.getUserId(refreshToken);
         if (id == null) {
             throw new ErrorException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
+        String token = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(refreshToken)
+                .getBody().get("token", String.class);
+        System.out.println(token);
+
+        if(!token.isEmpty()){
+            return this.reissueKakaoToken(token);
+        }
 
         return createAccessToken(id, userRepository.findById(id).get().getUserRole());
+    }
+
+    // kakaoToken 재발행
+    public String reissueKakaoToken(String refreshToken) throws ParseException {
+        String id = this.getUserId(refreshToken);
+        if (id == null) {
+            throw new ErrorException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
+        }
+        Map newToken = kakaoApi.reissuedToken(refreshToken);
+
+        return createKakaToken(id, userRepository.findById(id).get().getUserRole(), (long) newToken.get("expires_in"), newToken.get("access_Token").toString());
     }
 
     // Request의 Header에서 AccessToken 값을 가져옵니다. "authorization" : "token"

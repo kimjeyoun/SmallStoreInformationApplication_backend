@@ -37,7 +37,6 @@ public class User {
     private String address;
 
     @ApiModelProperty(value = "nickname", example = "test")
-    @Column(nullable = true)
     private String nickname;
 
     // 이메일 2차 인증
